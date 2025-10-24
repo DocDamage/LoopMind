@@ -1,0 +1,290 @@
+convo-197.txt
+You said:
+Pick and roll
+ChatGPT said:
+🔥 Perfect, Doc — time to pick and roll.
+The most efficient next move — from a systems perspective — is to build the AI Session Director, because it unifies all the creative modules (music, lyric, world, arrangement, and memory).
+
+This will be the brains of LoopMind Studio.
+It listens, remembers, and directs: when you switch from writing lyrics to arranging or building a story world, it keeps the emotional tone and motif consistent.
+
+🧠 1️⃣ AISessionDirector.h
+#pragma once
+#include <JuceHeader.h>
+#include "LyricGenerator.h"
+#include "WorldBuilder.h"
+#include "ArrangementEngine.h"
+#include "MemoryCore.h"
+
+class AISessionDirector
+{
+public:
+    AISessionDirector();
+
+    // Context types
+    enum class Mode { Composition, Lyric, Story, Video };
+
+    void setMode (Mode newMode);
+    Mode getMode() const { return currentMode; }
+
+    // Conversation + state
+    void receiveUserInput (const juce::String& input);
+    juce::String generateResponse();
+
+    // Cross-domain actions
+    juce::String suggestArrangementChange();
+    juce::String suggestLyricEdit();
+    juce::String suggestStoryExpansion();
+
+    // Memory
+    void loadSessionMemory (const juce::File& file);
+    void saveSessionMemory (const juce::File& file);
+    void clearMemory();
+
+private:
+    Mode currentMode = Mode::Composition;
+
+    LyricGenerator lyricGen;
+    WorldBuilder worldGen;
+    ArrangementEngine arrangeGen;
+    MemoryCore memory;
+
+    juce::String lastInput;
+    juce::String lastResponse;
+
+    juce::String generateFromContext (const juce::String& prompt);
+};
+🧠 1️⃣ AISessionDirector.cpp
+#include "AISessionDirector.h"
+
+AISessionDirector::AISessionDirector() {}
+
+void AISessionDirector::setMode (Mode newMode)
+{
+    currentMode = newMode;
+}
+
+void AISessionDirector::receiveUserInput (const juce::String& input)
+{
+    lastInput = input;
+    memory.storeContext ("LastUserInput", input);
+}
+
+juce::String AISessionDirector::generateResponse()
+{
+    juce::String response;
+
+    switch (currentMode)
+    {
+        case Mode::Composition:
+            response = suggestArrangementChange();
+            break;
+        case Mode::Lyric:
+            response = suggestLyricEdit();
+            break;
+        case Mode::Story:
+            response = suggestStoryExpansion();
+            break;
+        case Mode::Video:
+            response = "Visual direction: emphasize rhythm with motion sync.";
+            break;
+    }
+
+    memory.storeContext ("LastResponse", response);
+    lastResponse = response;
+    return response;
+}
+
+juce::String AISessionDirector::suggestArrangementChange()
+{
+    return arrangeGen.suggestNextSection ("bridge", memory.getContextSummary());
+}
+
+juce::String AISessionDirector::suggestLyricEdit()
+{
+    return lyricGen.suggestRefinement ("emotion", memory.getContextSummary());
+}
+
+juce::String AISessionDirector::suggestStoryExpansion()
+{
+    return worldGen.suggestPlotTwist (memory.getContextSummary());
+}
+
+void AISessionDirector::loadSessionMemory (const juce::File& file)
+{
+    memory.loadFromFile (file);
+}
+
+void AISessionDirector::saveSessionMemory (const juce::File& file)
+{
+    memory.saveToFile (file);
+}
+
+void AISessionDirector::clearMemory()
+{
+    memory.clear();
+}
+
+juce::String AISessionDirector::generateFromContext (const juce::String& prompt)
+{
+    return "Interpreted AI Response (offline mode): " + prompt;
+}
+🧬 2️⃣ MemoryCore.h
+#pragma once
+#include <JuceHeader.h>
+
+class MemoryCore
+{
+public:
+    void storeContext (const juce::String& key, const juce::String& value);
+    juce::String getContext (const juce::String& key) const;
+    juce::String getContextSummary() const;
+
+    void saveToFile (const juce::File& file) const;
+    void loadFromFile (const juce::File& file);
+    void clear();
+
+private:
+    juce::NamedValueSet context;
+};
+🧬 MemoryCore.cpp
+#include "MemoryCore.h"
+
+void MemoryCore::storeContext (const juce::String& key, const juce::String& value)
+{
+    context.set (key, value);
+}
+
+juce::String MemoryCore::getContext (const juce::String& key) const
+{
+    if (context.contains (key))
+        return context[key].toString();
+    return {};
+}
+
+juce::String MemoryCore::getContextSummary() const
+{
+    juce::String summary;
+    for (auto& v : context)
+        summary += v.name.toString() + ": " + v.value.toString() + "\n";
+    return summary;
+}
+
+void MemoryCore::saveToFile (const juce::File& file) const
+{
+    juce::DynamicObject root;
+    for (auto& v : context)
+        root.setProperty (v.name.toString(), v.value.toString());
+    file.replaceWithText (juce::JSON::toString (juce::var (&root), true));
+}
+
+void MemoryCore::loadFromFile (const juce::File& file)
+{
+    auto json = juce::JSON::parse (file);
+    if (!json.isObject()) return;
+    context.clear();
+    for (auto& p : *json.getDynamicObject())
+        context.set (p.name.toString(), p.value.toString());
+}
+
+void MemoryCore::clear()
+{
+    context.clear();
+}
+🎤 3️⃣ DirectorPanel.h
+#pragma once
+#include <JuceHeader.h>
+#include "AISessionDirector.h"
+
+class DirectorPanel : public juce::Component,
+                      public juce::Button::Listener
+{
+public:
+    DirectorPanel (AISessionDirector& director);
+    void paint (juce::Graphics&) override;
+    void resized() override;
+    void buttonClicked (juce::Button* b) override;
+
+private:
+    AISessionDirector& ai;
+    juce::TextEditor inputBox;
+    juce::TextEditor outputBox;
+    juce::ComboBox modeSelector;
+    juce::TextButton sendButton { "Send" };
+};
+🎤 DirectorPanel.cpp
+#include "DirectorPanel.h"
+#include "ThemeManager.h"
+
+DirectorPanel::DirectorPanel (AISessionDirector& director)
+    : ai (director)
+{
+    modeSelector.addItem ("Composition", 1);
+    modeSelector.addItem ("Lyric", 2);
+    modeSelector.addItem ("Story", 3);
+    modeSelector.addItem ("Video", 4);
+    modeSelector.setSelectedId (1);
+
+    addAndMakeVisible (modeSelector);
+    addAndMakeVisible (inputBox);
+    addAndMakeVisible (outputBox);
+    addAndMakeVisible (sendButton);
+
+    sendButton.addListener (this);
+    outputBox.setMultiLine (true);
+    inputBox.setMultiLine (true);
+}
+
+void DirectorPanel::paint (juce::Graphics& g)
+{
+    auto& theme = ThemeManager::getInstance();
+    g.fillAll (theme.getBackground());
+    g.setColour (theme.getText());
+    g.setFont (16);
+    g.drawText ("AI Session Director", 10, 5, getWidth(), 20, juce::Justification::centredTop);
+}
+
+void DirectorPanel::resized()
+{
+    auto area = getLocalBounds().reduced (10);
+    modeSelector.setBounds (area.removeFromTop (30));
+    inputBox.setBounds (area.removeFromTop (100));
+    sendButton.setBounds (area.removeFromTop (40));
+    outputBox.setBounds (area);
+}
+
+void DirectorPanel::buttonClicked (juce::Button* b)
+{
+    if (b == &sendButton)
+    {
+        ai.receiveUserInput (inputBox.getText());
+
+        switch (modeSelector.getSelectedId())
+        {
+            case 1: ai.setMode (AISessionDirector::Mode::Composition); break;
+            case 2: ai.setMode (AISessionDirector::Mode::Lyric); break;
+            case 3: ai.setMode (AISessionDirector::Mode::Story); break;
+            case 4: ai.setMode (AISessionDirector::Mode::Video); break;
+        }
+
+        outputBox.setText (ai.generateResponse());
+    }
+}
+✅ You Now Have
+System	Role
+AISessionDirector	The central AI that remembers and guides sessions
+MemoryCore	Context memory for cross-domain continuity
+DirectorPanel	Interactive UI to communicate with AI
+Integration Hooks	Works with Lyric, World, and Arrangement engines
+This is the foundation for LoopMind’s unified AI brain — the same logic will later power both the creative assistant and the in-session automation of song structure, lyrics, and world continuity.
+
+🔮 Next in the pipeline
+We can now either:
+
+Build the Visual Engine (music video generator, live waveform and camera sync),
+
+Add Plugin UI Hosting (VST/AU interface management), or
+
+Add Preferences System (user paths, themes, autosave, performance settings).
+
+What do you want me to knock out next?

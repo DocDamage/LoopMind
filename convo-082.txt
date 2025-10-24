@@ -1,0 +1,401 @@
+convo-082.txt
+You said:
+.
+ChatGPT said:
+Continuing right where we left off — now constructing the WorkspaceManager, the backbone of LoopMind’s UI system.
+It controls the main window, manages dockable panels, and registers everything with the EventBus and ThemeManager.
+
+🖥️ WorkspaceManager — Dockable UI & Window System
+🧩 File: WorkspaceManager.h
+#pragma once
+#include <JuceHeader.h>
+#include "EventBus.h"
+#include "ThemeManager.h"
+
+class WorkspaceManager
+{
+public:
+    WorkspaceManager(EventBus* bus, ThemeManager* theme);
+    ~WorkspaceManager();
+
+    void showMainWindow();
+
+private:
+    class MainWindow : public juce::DocumentWindow
+    {
+    public:
+        MainWindow(const juce::String& name, juce::Colour bg, WorkspaceManager& parent);
+        void closeButtonPressed() override;
+    private:
+        WorkspaceManager& owner;
+    };
+
+    std::unique_ptr<MainWindow> mainWindow;
+    std::unique_ptr<juce::Component> workspaceRoot;
+
+    EventBus* eventBus;
+    ThemeManager* themeManager;
+
+    void createBaseLayout();
+    void handleEventSubscriptions();
+};
+🧩 File: WorkspaceManager.cpp
+#include "WorkspaceManager.h"
+
+using namespace juce;
+
+WorkspaceManager::WorkspaceManager(EventBus* bus, ThemeManager* theme)
+    : eventBus(bus), themeManager(theme)
+{
+    createBaseLayout();
+    handleEventSubscriptions();
+}
+
+WorkspaceManager::~WorkspaceManager()
+{
+    eventBus = nullptr;
+    themeManager = nullptr;
+}
+
+void WorkspaceManager::showMainWindow()
+{
+    auto bgColour = themeManager->getBackground();
+    mainWindow = std::make_unique<MainWindow>("LoopMind", bgColour, *this);
+    mainWindow->setUsingNativeTitleBar(true);
+    mainWindow->setContentOwned(workspaceRoot.release(), true);
+    mainWindow->centreWithSize(1280, 800);
+    mainWindow->setResizable(true, false);
+    mainWindow->setVisible(true);
+}
+
+void WorkspaceManager::createBaseLayout()
+{
+    // Placeholder root - to be replaced with dock manager later
+    auto root = std::make_unique<Component>();
+    root->setName("WorkspaceRoot");
+
+    auto label = std::make_unique<Label>("startupLabel", "LoopMind Creative Workspace");
+    label->setJustificationType(Justification::centred);
+    label->setFont(Font(24.0f, Font::bold));
+    label->setBounds(0, 0, 600, 60);
+    label->setCentreRelative(0.5f, 0.5f);
+    root->addAndMakeVisible(label.release());
+
+    workspaceRoot = std::move(root);
+}
+
+void WorkspaceManager::handleEventSubscriptions()
+{
+    // Listen for theme updates
+    eventBus->subscribe("Theme.Updated", [this](const std::any& payload){
+        if (auto c = std::any_cast<Colour>(&payload))
+            workspaceRoot->setColour(Component::backgroundColourId, *c);
+    });
+}
+
+// ─────────────────────────────── MainWindow ─────────────────────────────── //
+
+WorkspaceManager::MainWindow::MainWindow(const String& name, Colour bg, WorkspaceManager& parent)
+    : DocumentWindow(name, bg, DocumentWindow::allButtons), owner(parent)
+{
+    setResizable(true, true);
+}
+
+void WorkspaceManager::MainWindow::closeButtonPressed()
+{
+    JUCEApplication::getInstance()->systemRequestedQuit();
+}
+This creates:
+
+A persistent main window with full resize support.
+
+Subscriptions to the EventBus for theme updates.
+
+Hooks ready for adding panels (Creative Mode, Blend Studio, FX Composer, Render Studio).
+
+Next module coming up automatically:
+🎨 ThemeManager — dynamic theming, color palette switching, and theme updates broadcast over the EventBus.
+
+You said:
+.
+ChatGPT said:
+Continuing the build — now implementing the ThemeManager, which handles color palettes, theme switching (e.g., “Warm Vinyl Room”), and sends updates through the EventBus so every component (workspace, panels, FX Composer, etc.) changes instantly.
+
+🎨 ThemeManager — Color + Styling System
+🧩 File: ThemeManager.h
+#pragma once
+#include <JuceHeader.h>
+#include "EventBus.h"
+
+struct ThemePalette
+{
+    juce::Colour background;
+    juce::Colour accent;
+    juce::Colour text;
+    juce::Colour highlight;
+    juce::Colour panel;
+};
+
+class ThemeManager
+{
+public:
+    ThemeManager(EventBus* bus);
+
+    void applyTheme(const juce::String& name);
+    juce::Colour getBackground() const;
+    juce::Colour getAccent() const;
+    juce::Colour getText() const;
+    juce::Colour getHighlight() const;
+    juce::Colour getPanel() const;
+
+private:
+    EventBus* eventBus;
+    ThemePalette current;
+
+    ThemePalette createWarmVinylRoom();
+    ThemePalette createCinematicBlue();
+    ThemePalette createDefaultDark();
+};
+🧩 File: ThemeManager.cpp
+#include "ThemeManager.h"
+
+using namespace juce;
+
+ThemeManager::ThemeManager(EventBus* bus)
+    : eventBus(bus)
+{
+    current = createDefaultDark();
+    applyTheme("Default Dark");
+}
+
+void ThemeManager::applyTheme(const String& name)
+{
+    if (name == "Warm Vinyl Room")
+        current = createWarmVinylRoom();
+    else if (name == "Cinematic Blue")
+        current = createCinematicBlue();
+    else
+        current = createDefaultDark();
+
+    // Broadcast theme update to all panels
+    eventBus->publish("Theme.Updated", std::make_any<Colour>(current.background));
+    eventBus->publish("Theme.Changed", std::make_any<String>(name));
+}
+
+Colour ThemeManager::getBackground() const   { return current.background; }
+Colour ThemeManager::getAccent() const       { return current.accent; }
+Colour ThemeManager::getText() const         { return current.text; }
+Colour ThemeManager::getHighlight() const    { return current.highlight; }
+Colour ThemeManager::getPanel() const        { return current.panel; }
+
+// ─────────────────────────── Theme Palettes ─────────────────────────── //
+
+ThemePalette ThemeManager::createWarmVinylRoom()
+{
+    return {
+        Colour::fromRGB(25, 20, 15),   // background
+        Colour::fromRGB(180, 120, 60), // accent (warm amber)
+        Colours::antiquewhite,         // text
+        Colour::fromRGB(240, 180, 90), // highlight
+        Colour::fromRGB(45, 35, 25)    // panel
+    };
+}
+
+ThemePalette ThemeManager::createCinematicBlue()
+{
+    return {
+        Colour::fromRGB(12, 16, 24),
+        Colour::fromRGB(80, 140, 220),
+        Colours::whitesmoke,
+        Colour::fromRGB(100, 160, 240),
+        Colour::fromRGB(20, 25, 35)
+    };
+}
+
+ThemePalette ThemeManager::createDefaultDark()
+{
+    return {
+        Colour::fromRGB(18, 18, 18),
+        Colour::fromRGB(70, 70, 70),
+        Colours::white,
+        Colour::fromRGB(120, 120, 120),
+        Colour::fromRGB(24, 24, 24)
+    };
+}
+🔁 Behavior Overview
+When a theme changes, ThemeManager emits:
+
+"Theme.Updated" with the new background color (so panels repaint).
+
+"Theme.Changed" with the theme name (so menus or preferences update).
+
+Panels can subscribe to these and immediately restyle themselves.
+
+✅ Result So Far
+You now have:
+
+LoopMindApp booting the runtime.
+
+A functioning EventBus backbone.
+
+A WorkspaceManager managing the main window.
+
+A full theme system (ThemeManager) with instant EventBus updates.
+
+Next module (continuing automatically):
+🕹 InputMap System — loads all keyboard, mouse, and MIDI bindings from inputmap.json, handles rebinding, and publishes Input.ActionTriggered events to the EventBus for the rest of the system to react to.
+
+You said:
+.
+ChatGPT said:
+Continuing seamlessly — now constructing the InputMap system, which gives LoopMind its full keyboard, mouse, and MIDI control layer.
+It reads the JSON file (the one we defined earlier), maps it to actions, and publishes Input.ActionTriggered events on the EventBus whenever a user performs a mapped input.
+
+🎮 InputMap System — Keyboard, Mouse, MIDI Bindings
+🧩 File: InputMap.h
+#pragma once
+#include <JuceHeader.h>
+#include "EventBus.h"
+
+class InputMap : public juce::KeyListener,
+                 public juce::MidiInputCallback
+{
+public:
+    InputMap(EventBus* bus);
+    ~InputMap();
+
+    void loadFromJson(const juce::File& file);
+
+    // JUCE overrides
+    bool keyPressed(const juce::KeyPress& key, juce::Component*) override;
+    void handleIncomingMidiMessage(juce::MidiInput* source, const juce::MidiMessage& message) override;
+
+private:
+    EventBus* eventBus;
+
+    std::unordered_map<juce::String, juce::String> keyBindings;
+    std::unordered_map<int, juce::String> midiCCBindings;
+
+    juce::String normalizeKeyCombo(const juce::KeyPress& key);
+    void triggerAction(const juce::String& action);
+};
+🧩 File: InputMap.cpp
+#include "InputMap.h"
+
+using namespace juce;
+
+InputMap::InputMap(EventBus* bus) : eventBus(bus)
+{
+    // Load default bindings from local config
+    auto config = File::getSpecialLocation(File::userApplicationDataDirectory)
+                    .getChildFile("LoopMind/inputmap.json");
+
+    if (config.existsAsFile())
+        loadFromJson(config);
+    else
+        DBG("[InputMap] No config found, using defaults");
+}
+
+InputMap::~InputMap() {}
+
+void InputMap::loadFromJson(const File& file)
+{
+    var parsed = JSON::parse(file);
+    if (!parsed.isObject()) return;
+
+    auto* obj = parsed.getDynamicObject();
+    if (obj == nullptr) return;
+
+    keyBindings.clear();
+
+    // Parse keyboard bindings
+    if (auto* global = obj->getProperty("global").getDynamicObject())
+    {
+        for (auto& p : global->getProperties())
+            keyBindings[p.name.toString()] = p.value.toString();
+    }
+
+    // Parse MIDI bindings
+    if (auto* midi = obj->getProperty("midi").getDynamicObject())
+    {
+        for (auto& p : midi->getProperties())
+        {
+            int cc = p.name.toString().getIntValue();
+            midiCCBindings[cc] = p.value.toString();
+        }
+    }
+
+    DBG("[InputMap] Loaded bindings: " << keyBindings.size() << " keys, " << midiCCBindings.size() << " MIDI CCs");
+}
+
+bool InputMap::keyPressed(const KeyPress& key, Component*)
+{
+    auto combo = normalizeKeyCombo(key);
+    if (keyBindings.count(combo))
+    {
+        triggerAction(keyBindings[combo]);
+        return true;
+    }
+    return false;
+}
+
+void InputMap::handleIncomingMidiMessage(MidiInput*, const MidiMessage& message)
+{
+    if (message.isController())
+    {
+        int cc = message.getControllerNumber();
+        if (midiCCBindings.count(cc))
+        {
+            triggerAction(midiCCBindings[cc]);
+        }
+    }
+}
+
+String InputMap::normalizeKeyCombo(const KeyPress& key)
+{
+    String combo;
+    if (key.getModifiers().isCtrlDown())  combo += "Ctrl+";
+    if (key.getModifiers().isAltDown())   combo += "Alt+";
+    if (key.getModifiers().isShiftDown()) combo += "Shift+";
+    combo += KeyPress::getTextDescription(key.getKeyCode());
+    return combo;
+}
+
+void InputMap::triggerAction(const String& action)
+{
+    eventBus->publish("Input.ActionTriggered", std::make_any<String>(action));
+}
+🔁 How It Works
+Listens for keyboard and MIDI input globally.
+
+Normalizes each key combo (e.g., "Ctrl+Alt+B") and checks keyBindings.
+
+If matched, broadcasts:
+
+eventBus->publish("Input.ActionTriggered", std::make_any<juce::String>("panel.toggleBlendStudio"));
+Any module can subscribe to "Input.ActionTriggered" to act instantly (e.g., opening a panel or toggling FX).
+
+🧠 Example Integration (in WorkspaceManager)
+eventBus->subscribe("Input.ActionTriggered", [this](const std::any& payload){
+    if (auto cmd = std::any_cast<juce::String>(&payload))
+    {
+        if (*cmd == "panel.toggleBlendStudio")
+            toggleBlendStudio();
+        else if (*cmd == "panel.toggleFXComposer")
+            toggleFXComposer();
+    }
+});
+✅ So far implemented:
+
+Core JUCE app (LoopMindApp)
+
+EventBus
+
+WorkspaceManager
+
+ThemeManager
+
+InputMap
+
+Next step (continuing automatically):
+🎚 Audio Engine Skeleton — building the real-time DSP graph with track nodes, mixer bus, and audio routing foundation (the first step toward playback and mastering).

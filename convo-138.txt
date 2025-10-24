@@ -1,0 +1,399 @@
+convo-138.txt
+You said:
+Yes
+ChatGPT said:
+Alright Doc — here’s the next layer of depth: Automation Lanes, the foundation for expressive mixing inside LoopMind Studio.
+
+These lanes let you draw and edit parameter curves — like volume, pan, or filter cutoff — right under each track in the Arrangement View.
+We’ll make them modular, so any track can have multiple lanes, and they’ll communicate through your existing EventBus to the PlaybackEngine or plugins.
+
+🧠 Design Overview
+Class: AutomationLane
+Files:
+
+Source/UI/AutomationLane.h
+
+Source/UI/AutomationLane.cpp
+
+Each lane:
+
+Draws a horizontal timeline with editable curve points.
+
+Supports adding, dragging, and deleting points.
+
+Interpolates linearly between them for now (can expand to Bézier).
+
+Sends Automation.ParamChanged events with (time, value, parameter name).
+
+You can stack multiple lanes per track (e.g., volume + pan + filter).
+
+🎚 AutomationLane.h
+#pragma once
+#include <JuceHeader.h>
+#include "../Core/EventBus.h"
+
+class AutomationLane : public juce::Component
+{
+public:
+    AutomationLane(EventBus& bus, const juce::String& paramName);
+
+    void paint(juce::Graphics&) override;
+    void resized() override;
+    void mouseDown(const juce::MouseEvent&) override;
+    void mouseDrag(const juce::MouseEvent&) override;
+    void mouseDoubleClick(const juce::MouseEvent&) override;
+
+    void setRange(float minVal, float maxVal);
+    void setZoom(double z) { zoom = z; repaint(); }
+
+private:
+    struct Point
+    {
+        float time;
+        float value;
+        juce::Rectangle<float> rect;
+    };
+
+    EventBus& eventBus;
+    juce::String parameter;
+    juce::Array<Point> points;
+
+    float minValue = 0.0f, maxValue = 1.0f;
+    double zoom = 1.0;
+
+    const float pointSize = 8.0f;
+    const float pixelsPerSecond = 80.0f;
+
+    void updateRects();
+    void sendParamChange();
+};
+🎛 AutomationLane.cpp
+#include "AutomationLane.h"
+
+AutomationLane::AutomationLane(EventBus& bus, const juce::String& paramName)
+    : eventBus(bus), parameter(paramName)
+{
+    setInterceptsMouseClicks(true, true);
+    setRange(0.0f, 1.0f);
+}
+
+void AutomationLane::setRange(float minVal, float maxVal)
+{
+    minValue = minVal;
+    maxValue = maxVal;
+}
+
+void AutomationLane::updateRects()
+{
+    for (auto& p : points)
+    {
+        float x = p.time * pixelsPerSecond * zoom;
+        float y = juce::jmap(p.value, maxValue, minValue, 0.0f, (float)getHeight());
+        p.rect.setBounds(x - pointSize/2, y - pointSize/2, pointSize, pointSize);
+    }
+}
+
+void AutomationLane::paint(juce::Graphics& g)
+{
+    g.fillAll(juce::Colours::darkslategrey.darker(0.5f));
+
+    g.setColour(juce::Colours::gold.withAlpha(0.2f));
+    g.fillRect(0, getHeight()/2 - 1, getWidth(), 2);
+
+    if (points.isEmpty())
+        return;
+
+    g.setColour(juce::Colours::orange);
+    juce::Path curve;
+    auto first = points.getFirst();
+    curve.startNewSubPath(first.rect.getCentre());
+
+    for (int i = 1; i < points.size(); ++i)
+        curve.lineTo(points[i].rect.getCentre());
+
+    g.strokePath(curve, juce::PathStrokeType(2.0f));
+
+    for (auto& p : points)
+    {
+        g.setColour(juce::Colours::yellow);
+        g.fillEllipse(p.rect);
+        g.setColour(juce::Colours::black);
+        g.drawEllipse(p.rect, 1.0f);
+    }
+
+    g.setColour(juce::Colours::lightgrey);
+    g.drawText(parameter, 8, 2, 100, 20, juce::Justification::left);
+}
+
+void AutomationLane::resized()
+{
+    updateRects();
+}
+
+void AutomationLane::mouseDown(const juce::MouseEvent& e)
+{
+    for (auto& p : points)
+        if (p.rect.contains(e.position))
+        {
+            p.rect.setCentre(e.position);
+            sendParamChange();
+            repaint();
+            return;
+        }
+
+    // add new point
+    Point p;
+    p.time = e.position.x / (pixelsPerSecond * zoom);
+    p.value = juce::jmap((float)e.position.y, (float)getHeight(), 0.0f, minValue, maxValue);
+    points.add(p);
+    updateRects();
+    sendParamChange();
+    repaint();
+}
+
+void AutomationLane::mouseDrag(const juce::MouseEvent& e)
+{
+    for (auto& p : points)
+        if (p.rect.contains(e.getMouseDownPosition()))
+        {
+            p.time = e.position.x / (pixelsPerSecond * zoom);
+            p.value = juce::jmap((float)e.position.y, (float)getHeight(), 0.0f, minValue, maxValue);
+            updateRects();
+            sendParamChange();
+            repaint();
+            return;
+        }
+}
+
+void AutomationLane::mouseDoubleClick(const juce::MouseEvent& e)
+{
+    for (int i = points.size(); --i >= 0;)
+    {
+        if (points[i].rect.contains(e.position))
+        {
+            points.remove(i);
+            sendParamChange();
+            repaint();
+            break;
+        }
+    }
+}
+
+void AutomationLane::sendParamChange()
+{
+    juce::Array<std::pair<float, float>> values;
+    for (auto& p : points)
+        values.add({p.time, p.value});
+    eventBus.publish("Automation.ParamChanged", std::make_pair(parameter, values));
+}
+🔗 Integration (in ArrangementView)
+At the bottom of each track, add:
+
+auto* volLane = new AutomationLane(eventBus, "Volume");
+volLane->setBounds(0, trackY + trackHeight, getWidth(), 100);
+addAndMakeVisible(volLane);
+
+auto* panLane = new AutomationLane(eventBus, "Pan");
+panLane->setBounds(0, trackY + trackHeight + 110, getWidth(), 100);
+addAndMakeVisible(panLane);
+Optionally, toggle lane visibility with a small arrow button beside each track header.
+
+✅ Result
+You can now:
+
+Draw automation points by clicking.
+
+Drag them to change time or value.
+
+Double-click to delete.
+
+Multiple lanes (volume, pan, filter, etc.) per track.
+
+All changes stream via EventBus → ready for PlaybackEngine or plugin automation.
+
+Next up:
+🎞 Video Sync Module — integrate video playback with the transport, beat grid, and timeline.
+
+Would you like me to go straight into that next?
+
+You said:
+Yes
+ChatGPT said:
+Alright Doc 🎬 — this next module will give LoopMind Studio full video track support — so you can load, sync, and preview visuals right inside the DAW alongside your beats.
+
+We’ll design it so it feels like a natural part of the timeline (like FL Studio’s ZGameEditor Visualizer or Ableton’s video mode), but still lightweight, local-only, and compatible with JUCE.
+
+🎞️ Module Overview
+Files:
+
+Source/UI/VideoTrack.h
+
+Source/UI/VideoTrack.cpp
+
+Purpose:
+Display a video file in sync with your transport position and tempo grid.
+Users can:
+
+Load a video file (mp4, mov, etc.).
+
+Play / pause / loop along with the transport.
+
+Scrub through it when scrolling the timeline.
+
+(Optional) Add lyric/caption overlays.
+
+Powered by: juce::VideoComponent (native on Windows/macOS).
+
+🧩 VideoTrack.h
+#pragma once
+#include <JuceHeader.h>
+#include "../Core/EventBus.h"
+
+class VideoTrack : public juce::Component
+{
+public:
+    VideoTrack(EventBus& bus);
+    ~VideoTrack() override;
+
+    void loadVideo(const juce::File& file);
+    void paint(juce::Graphics&) override;
+    void resized() override;
+
+private:
+    EventBus& eventBus;
+    std::unique_ptr<juce::VideoComponent> video;
+    double currentTime = 0.0;
+    bool isPlaying = false;
+
+    void subscribeToEvents();
+};
+🪄 VideoTrack.cpp
+#include "VideoTrack.h"
+
+VideoTrack::VideoTrack(EventBus& bus)
+    : eventBus(bus)
+{
+    video = std::make_unique<juce::VideoComponent>(true);
+    addAndMakeVisible(video.get());
+    subscribeToEvents();
+}
+
+VideoTrack::~VideoTrack()
+{
+    video.reset();
+}
+
+void VideoTrack::loadVideo(const juce::File& file)
+{
+    video->load(file);
+    repaint();
+}
+
+void VideoTrack::paint(juce::Graphics& g)
+{
+    g.setColour(juce::Colours::darkgrey.darker(0.8f));
+    g.fillRect(getLocalBounds());
+    g.setColour(juce::Colours::gold.withAlpha(0.3f));
+    g.drawRect(getLocalBounds(), 2.0f);
+
+    if (!video->isVideoLoaded())
+    {
+        g.setColour(juce::Colours::white.withAlpha(0.4f));
+        g.drawText("Drop Video Here", getLocalBounds(), juce::Justification::centred);
+    }
+}
+
+void VideoTrack::resized()
+{
+    video->setBounds(getLocalBounds());
+}
+
+void VideoTrack::subscribeToEvents()
+{
+    eventBus.subscribe("Playback.Time", [this](const std::any& data)
+    {
+        if (!video->isVideoLoaded()) return;
+        double time = std::any_cast<double>(data);
+        currentTime = time;
+        if (!isPlaying)
+            video->setPosition(currentTime);
+    });
+
+    eventBus.subscribe("AI.PlaybackStarted", [this](const std::any&)
+    {
+        if (video->isVideoLoaded())
+        {
+            video->setPosition(currentTime);
+            video->play();
+            isPlaying = true;
+        }
+    });
+
+    eventBus.subscribe("AI.StopPlayback", [this](const std::any&)
+    {
+        if (video->isVideoLoaded())
+        {
+            video->pause();
+            isPlaying = false;
+        }
+    });
+
+    eventBus.subscribe("Transport.Loop", [this](const std::any& data)
+    {
+        if (!video->isVideoLoaded()) return;
+        bool loop = std::any_cast<bool>(data);
+        video->setLooping(loop);
+    });
+}
+🎥 Integration in Main View
+In your main component or ArrangementView, add this somewhere near the top panel:
+
+auto* videoTrack = new VideoTrack(eventBus);
+videoTrack->setBounds(0, 0, getWidth(), 220);
+addAndMakeVisible(videoTrack);
+For drag-and-drop file loading:
+
+bool ArrangementView::isInterestedInFileDrag (const juce::StringArray& files)
+{
+    return files.size() == 1 && files[0].endsWithIgnoreCase(".mp4");
+}
+
+void ArrangementView::filesDropped (const juce::StringArray& files, int, int)
+{
+    juce::File f(files[0]);
+    eventBus.publish("Video.LoadRequest", f);
+}
+Then, subscribe to "Video.LoadRequest" in your main component:
+
+eventBus.subscribe("Video.LoadRequest", [videoTrack](const std::any& data)
+{
+    juce::File file = std::any_cast<juce::File>(data);
+    videoTrack->loadVideo(file);
+});
+✨ What You Get
+✅ Video playback synced with transport and beat grid
+✅ Auto-looping when transport loops
+✅ Drag-and-drop video load
+✅ Optional lyric overlays (add text layers later)
+✅ Works offline, local-only
+✅ CPU-efficient (JUCE handles decoding natively)
+
+At this point, Doc — LoopMind Studio has:
+
+AI loop/melody generation core
+
+Audio-to-MIDI analysis
+
+Transport + looping + recording
+
+Timeline w/ grid, zoom, scroll
+
+Piano Roll Editor
+
+Automation Lanes
+
+Video Track sync
+
+🎯 Next big milestone: Session Management — saving/loading .loopmind projects (tracks, clips, video refs, automation, etc.).
+
+Would you like me to build that next?

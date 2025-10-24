@@ -1,0 +1,133 @@
+convo-079.txt
+You said:
+Both
+ChatGPT said:
+Great — let’s take this all the way through.
+Below is the complete storyboard (so a developer or motion designer knows how every window animates, opens, and transitions) plus the input-mapping table (every keyboard / mouse gesture and what it triggers).
+No code yet—this is a visual & behavioral design spec that’s safe to hand straight to UI or engine developers.
+
+🎞️ 1. FRAME-BY-FRAME STORYBOARD
+Each “frame” here = a UI transition moment (≈100–300 ms) with its easing and target elements.
+
+🌅 Startup → Creative Mode
+Frame	Duration	Description
+F1	0 ms	Splash logo on black (LoopMind text fades in)
+F2	250 ms	Ambient vinyl hiss SFX, amber glow sweep left→right
+F3	500 ms	Background blur reveals Startup Hub
+F4	150 ms	When “New Project” clicked → quick white flash of cursor
+F5	300 ms	Hub slides upward, Creative Mode canvas fades in
+F6	200 ms	Transport & Mixer panels slide from edges (Ease Out Quart)
+F7	Idle	Ambient particle drift in background (low-opacity GPU loop)
+🧬 Open → Blend Studio (“AI Blend Dock”)
+Frame	Duration	Motion	Elements
+B1	0 ms	none	User presses Ctrl + Alt + B
+B2	200 ms	Panel slides from right edge, opacity 0→1	
+B3	120 ms	Blend-slider & tag bar fade-up sequentially	
+B4	80 ms each	Thumbnails scale 1.05× pulse → settle	
+B5	Live	Moving the slider morphs shader preview (GPU tween)	
+B6	100 ms	“Save Blend” button highlight flash on success	
+🎛️ Open → FX Composer (Bottom Dock)
+Frame	Duration	Motion
+F1	0 ms	User presses Ctrl + Alt + F
+F2	200 ms	Bottom panel slides up (Ease Out Cubic)
+F3	150 ms	Each FX-slot fades in with 25 ms stagger
+F4	100 ms	Preview canvas cross-fades from pre-FX to post-FX
+F5	Live	Turning knob animates circular fill; value popup fades out after 1 s
+🎥 Transition → Render Studio
+Frame	Duration	Description
+R1	0 ms	User hits Ctrl + Alt + R
+R2	200 ms	Workspace dims → camera icon spins in center
+R3	300 ms	Render timeline slides from bottom, preview zooms in (Ease Out Expo)
+R4	100 ms	HUD elements fade in sequence: Camera ▶ Lighting ▶ Export
+R5	Loop	Play animation of render progress bar (amber pulse)
+💫 Dock / Float / Tab Animations
+Action	Duration	Visual
+Dock → Float	180 ms	Panel lifts off with drop shadow and scale 1.02×
+Float → Dock	180 ms	Shadow collapses → panel snaps to grid
+Tab Switch	220 ms	Cross-fade old/new tab; underline slide animation
+Close Panel	120 ms	Fade → scale 0.95 → remove
+Maximize / Restore	250 ms	Smooth zoom with ease in/out
+⌨️ 2. INPUT-MAPPING TABLE
+All bindings are stored in /config/inputmap.json so users can re-map.
+
+🎹 Global Shortcuts
+Key / Combo	Action	Context
+Space	Play / Pause	Global transport
+Enter	Confirm dialog / apply	Any dialog
+Esc	Cancel / close current panel	Global
+Ctrl + S	Save project	Global
+Ctrl + Shift + S	Save As	Global
+Ctrl + O	Open project	Global
+Ctrl + Alt + B	Toggle Blend Studio	Workspace
+Ctrl + Alt + F	Toggle FX Composer	Workspace
+Ctrl + Alt + R	Toggle Render Studio	Workspace
+Ctrl + M	Toggle Mixer	Workspace
+Ctrl + ,	Preferences	Workspace
+F11	Fullscreen	Global
+🧬 Blend Studio Shortcuts
+Key	Action
+← / →	Adjust α blend ±0.01
+Shift + ← / →	Fine tune ±0.001
+Ctrl + T	Train model
+Ctrl + P	Save pair
+Alt + Click Thumbnail	Swap preset A/B
+Mouse Wheel on Slider	Smooth scrub
+🎛️ FX Composer Shortcuts
+Key	Action
+A	Add new FX
+Delete	Remove selected FX
+↑ / ↓	Navigate FX list
+Ctrl + ↑ / ↓	Re-order FX
+Ctrl + L	Load preset
+Ctrl + Shift + S	Save preset
+B	Bypass all FX
+Alt + Mouse Drag on Knob	Fine adjust parameter
+🎥 Render Studio Shortcuts
+Key	Action
+R	Start render
+Shift + R	HQ offline render
+C	Toggle camera preview
+L	Toggle lighting panel
+O	Toggle overlay panel
+Alt + E	Export settings
+Ctrl + Z	Undo last timeline move
+Ctrl + Shift + Z	Redo
+← / →	Move timeline cursor
+Alt + Scroll	Zoom timeline
+🖱 Mouse Gestures / Behaviors
+Gesture	Effect
+Left-drag on header	Move floating panel
+Alt + Left-drag	Undock / redock
+Middle-click tab	Close tab
+Double-click header	Maximize / restore
+Scroll wheel	Adjust focused slider or zoom preview
+Right-click canvas	Context menu (Save Image / Reload Shader / Inspect)
+Drag & Drop file (.wav/.mp4/.fxrack)	Import asset to current panel
+🎮 Optional MIDI Control Map
+MIDI CC	Function	Range
+CC 1	Blend α	0-127 → 0-1
+CC 7	FX Intensity	0-127
+CC 10	Camera Pan	0-127
+CC 74	Bloom Threshold	0-127
+Note C4	Toggle Render Studio	on/off
+🧩 3. STATE TRANSITION SUMMARY (Diagram)
+STARTUP
+  ↓
+CREATIVE MODE
+  ↓  (Ctrl + Alt + B)
+BLEND STUDIO  ←→  FX COMPOSER  ←→  RENDER STUDIO
+  ↑                ↑                ↓
+  └── Save Preset  └── Apply FX     └── Export Video
+Each arrow corresponds to an EventBus message (ShaderPreset.Updated, FXChain.Changed, etc.), ensuring zero lag across windows.
+
+✅ Summary
+Storyboard: defines timing, motion, and visual feel for every UI transition.
+Input Map: locks in consistent controls across DAW, visual, and render modules.
+
+If you’d like, the next layer could be:
+
+🎥 Motion-timing sheet (exact ms, easing curves, and parameter names for animation engine), or
+
+🧩 Complete control-binding JSON example that your devs can drop into JUCE / Qt / Unity input systems.
+
+Which should I generate next — animation-timing sheet or control-binding JSON?

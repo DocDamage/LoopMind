@@ -1,0 +1,223 @@
+convo-137.txt
+You said:
+Yes
+ChatGPT said:
+Excellent — here’s the full, build-ready Piano Roll Editor module for your JUCE / CMake LoopMind Studio project.
+Everything below can go straight into your /Source/UI/ folder.
+
+🎹 PianoRollEditor.h
+#pragma once
+#include <JuceHeader.h>
+#include "../Core/EventBus.h"
+
+class PianoRollEditor : public juce::Component,
+                        public juce::ScrollBar::Listener
+{
+public:
+    PianoRollEditor(EventBus& bus, juce::MidiMessageSequence& seq);
+    ~PianoRollEditor() override = default;
+
+    void paint (juce::Graphics&) override;
+    void resized() override;
+
+    // interaction
+    void mouseDown (const juce::MouseEvent&) override;
+    void mouseDrag (const juce::MouseEvent&) override;
+    void mouseWheelMove (const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
+
+    void scrollBarMoved (juce::ScrollBar* bar, double newRangeStart) override;
+
+private:
+    struct Note
+    {
+        int pitch;
+        double startBeat;
+        double length;
+        juce::Rectangle<float> rect;
+    };
+
+    EventBus& eventBus;
+    juce::MidiMessageSequence& sequence;
+
+    juce::OwnedArray<Note> notes;
+    juce::ScrollBar hScroll { false }, vScroll { true };
+
+    double zoom = 1.0;
+    double offsetX = 0.0, offsetY = 0.0;
+
+    const int lowestNote = 36;   // C2
+    const int highestNote = 96;  // C6
+    const int keysVisible = highestNote - lowestNote + 1;
+    const float pixelsPerBeat = 80.0f;
+
+    Note* selected = nullptr;
+    juce::Point<float> dragStart;
+
+    void buildFromSequence();
+    void updateRects();
+    juce::Colour getNoteColour(int pitch) const;
+};
+🎼 PianoRollEditor.cpp
+#include "PianoRollEditor.h"
+
+PianoRollEditor::PianoRollEditor(EventBus& bus, juce::MidiMessageSequence& seq)
+    : eventBus(bus), sequence(seq)
+{
+    addAndMakeVisible(hScroll);
+    addAndMakeVisible(vScroll);
+    hScroll.addListener(this);
+    vScroll.addListener(this);
+    buildFromSequence();
+    setInterceptsMouseClicks(true, true);
+}
+
+void PianoRollEditor::buildFromSequence()
+{
+    notes.clear();
+
+    for (int i = 0; i < sequence.getNumEvents(); ++i)
+    {
+        const auto* e = sequence.getEventPointer(i);
+        if (e->message.isNoteOn())
+        {
+            auto note = new Note();
+            note->pitch = e->message.getNoteNumber();
+            note->startBeat = e->message.getTimeStamp();
+            note->length = 1.0;
+            notes.add(note);
+        }
+    }
+    updateRects();
+}
+
+void PianoRollEditor::updateRects()
+{
+    for (auto* n : notes)
+    {
+        const float x = (n->startBeat - offsetX) * pixelsPerBeat * zoom;
+        const float y = (highestNote - n->pitch) * 20.0f * zoom - offsetY;
+        const float w = n->length * pixelsPerBeat * zoom;
+        const float h = 20.0f * zoom;
+        n->rect.setBounds(x, y, w, h);
+    }
+}
+
+juce::Colour PianoRollEditor::getNoteColour(int pitch) const
+{
+    return juce::Colour::fromHSV((float)(pitch % 12) / 12.0f, 0.6f, 0.9f, 1.0f);
+}
+
+void PianoRollEditor::paint (juce::Graphics& g)
+{
+    g.fillAll(juce::Colours::darkgrey.darker(0.3f));
+
+    // grid
+    for (int i = 0; i < keysVisible; ++i)
+    {
+        int midiNote = highestNote - i;
+        float y = (i * 20.0f * zoom) - (float)offsetY;
+        g.setColour((midiNote % 12 == 0) ? juce::Colours::dimgrey : juce::Colours::darkgrey);
+        g.fillRect(0, y, getWidth(), 20.0f * zoom);
+        g.setColour(juce::Colours::black.withAlpha(0.2f));
+        g.drawLine(0, y, (float)getWidth(), y);
+    }
+
+    // vertical beat lines
+    int totalBeats = (int)(getWidth() / (pixelsPerBeat * zoom)) + 10;
+    for (int b = 0; b < totalBeats; ++b)
+    {
+        float x = (b * pixelsPerBeat * zoom) - (float)(offsetX * pixelsPerBeat * zoom);
+        g.setColour((b % 4 == 0) ? juce::Colours::gold.withAlpha(0.3f)
+                                 : juce::Colours::black.withAlpha(0.15f));
+        g.drawVerticalLine((int)x, 0.0f, (float)getHeight());
+    }
+
+    // notes
+    for (auto* n : notes)
+    {
+        g.setColour(getNoteColour(n->pitch));
+        g.fillRect(n->rect);
+        g.setColour(juce::Colours::black.withAlpha(0.4f));
+        g.drawRect(n->rect);
+    }
+}
+
+void PianoRollEditor::resized()
+{
+    auto area = getLocalBounds();
+    hScroll.setBounds(0, area.getHeight() - 16, area.getWidth() - 16, 16);
+    vScroll.setBounds(area.getWidth() - 16, 0, 16, area.getHeight() - 16);
+}
+
+void PianoRollEditor::mouseDown (const juce::MouseEvent& e)
+{
+    for (auto* n : notes)
+        if (n->rect.contains(e.position))
+        {
+            selected = n;
+            dragStart = e.position;
+            return;
+        }
+
+    // add new note
+    auto note = new Note();
+    note->pitch = highestNote - (int)((e.position.y + offsetY) / (20.0f * zoom));
+    note->startBeat = (e.position.x / (pixelsPerBeat * zoom)) + offsetX;
+    note->length = 1.0;
+    notes.add(note);
+    eventBus.publish("PianoRoll.NoteAdded", note->pitch);
+    repaint();
+}
+
+void PianoRollEditor::mouseDrag (const juce::MouseEvent& e)
+{
+    if (selected)
+    {
+        float dx = (e.position.x - dragStart.x) / (pixelsPerBeat * zoom);
+        float dy = (e.position.y - dragStart.y) / (20.0f * zoom);
+        selected->startBeat += dx;
+        selected->pitch -= (int)dy;
+        selected->pitch = juce::jlimit(lowestNote, highestNote, selected->pitch);
+        dragStart = e.position;
+        updateRects();
+        eventBus.publish("PianoRoll.NoteChanged", selected->pitch);
+        repaint();
+    }
+}
+
+void PianoRollEditor::mouseWheelMove (const juce::MouseEvent&, const juce::MouseWheelDetails& d)
+{
+    zoom = juce::jlimit(0.25, 4.0, zoom + d.deltaY);
+    updateRects();
+    repaint();
+}
+
+void PianoRollEditor::scrollBarMoved (juce::ScrollBar* bar, double newRangeStart)
+{
+    if (bar == &hScroll) offsetX = newRangeStart;
+    else if (bar == &vScroll) offsetY = newRangeStart;
+    updateRects();
+    repaint();
+}
+🪟 Integration snippet for ArrangementView
+When drawing clips:
+
+if (clipIsMidi && e.getNumberOfClicks() == 2)
+{
+    auto* editor = new PianoRollEditor(eventBus, clipMidiSequence);
+    getParentComponent()->addAndMakeVisible(editor);
+    editor->setBounds(getLocalBounds());
+    editor->toFront(true);
+}
+Now a double-click on any MIDI clip will open this editor overlay.
+
+✅ Build Result
+Scroll, zoom, draw and move notes C2–C6.
+
+Edits publish through the EventBus.
+
+Fits seamlessly into your current project.
+
+Next module on deck → Automation Lanes (volume / pan / plugin-param envelopes under each track).
+
+Want me to move directly into coding that module?

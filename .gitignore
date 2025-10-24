@@ -1,0 +1,54 @@
+# Build directories
+/build/
+/cmake-build-*/
+Debug/
+Release/
+bin/
+dist/
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Projucer/JUCE
+*.jucer
+Builds/
+JuceLibraryCode/
+Builds/**/Builds/
+*.jucer.patch
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Visual Studio
+*.vcxproj*
+*.sln
+*.user
+*.opensdf
+*.sdf
+
+# Mac
+.DS_Store
+
+# Compiled object files, libs, executables
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+*.a
+*.lib
+
+# Logs and caches
+*.log
+/.cache/
+
+# Misc
+dist/
+node_modules/

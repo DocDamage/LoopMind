@@ -1,0 +1,189 @@
+convo-107.txt
+You said:
+Yes
+ChatGPT said:
+Perfect — moving straight into the Clip Editor + Piano Roll module 🎹.
+This is what lets you see and edit the AI’s arrangements or your own melodies/drum patterns visually, just like FL Studio’s Piano Roll.
+We’ll build it clean and modular so it can handle both MIDI clips and drum pads.
+
+🎹 Source/UI/PianoRollComponent.h
+#pragma once
+#include <JuceHeader.h>
+#include "EventBus.h"
+
+struct MidiNote
+{
+    int note;
+    float velocity;
+    double startBeat;
+    double lengthBeats;
+};
+
+class PianoRollComponent : public juce::Component
+{
+public:
+    PianoRollComponent(EventBus* bus);
+    ~PianoRollComponent() override = default;
+
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+    void mouseDown(const juce::MouseEvent& e) override;
+    void mouseDrag(const juce::MouseEvent& e) override;
+    void mouseUp(const juce::MouseEvent& e) override;
+
+    void setZoom(float beatsPerScreen);
+    void setNotes(const std::vector<MidiNote>& notes);
+    const std::vector<MidiNote>& getNotes() const;
+
+    void setGridResolution(double beatsPerGrid);
+    void clearNotes();
+
+private:
+    EventBus* eventBus;
+    std::vector<MidiNote> midiNotes;
+    double beatsPerGrid = 0.25; // 16th notes
+    float beatsPerScreen = 8.0f; // horizontal zoom
+    int selectedIndex = -1;
+
+    double pixelToBeatX(float x) const;
+    int pixelToNoteY(float y) const;
+    juce::Rectangle<float> noteToRect(const MidiNote& note) const;
+};
+🎹 Source/UI/PianoRollComponent.cpp
+#include "PianoRollComponent.h"
+using namespace juce;
+
+PianoRollComponent::PianoRollComponent(EventBus* bus)
+    : eventBus(bus)
+{
+    setWantsKeyboardFocus(true);
+    eventBus->publish("DirectorHUD.Message",
+        std::make_any<String>("🎹 Piano Roll initialized"));
+}
+
+void PianoRollComponent::paint(Graphics& g)
+{
+    auto bounds = getLocalBounds().toFloat();
+    g.fillAll(Colour::fromRGB(20, 18, 16));
+
+    // draw grid
+    g.setColour(Colour::fromRGBA(80, 80, 80, 80));
+    float pxPerBeat = bounds.getWidth() / beatsPerScreen;
+    for (float x = 0; x < bounds.getWidth(); x += pxPerBeat * beatsPerGrid)
+        g.drawLine(x, 0, x, bounds.getHeight(), 0.5f);
+
+    for (int n = 0; n < 128; ++n)
+    {
+        float y = bounds.getHeight() - n * (bounds.getHeight() / 128.0f);
+        if (n % 12 == 1 || n % 12 == 3 || n % 12 == 6 || n % 12 == 8 || n % 12 == 10)
+            g.setColour(Colour::fromRGB(28, 26, 25));
+        else
+            g.setColour(Colour::fromRGB(32, 30, 28));
+        g.fillRect(0, y - (bounds.getHeight() / 128.0f), bounds.getWidth(), (bounds.getHeight() / 128.0f));
+    }
+
+    // draw notes
+    for (auto& n : midiNotes)
+    {
+        auto r = noteToRect(n);
+        g.setColour(Colour::fromRGB(200, 130, 60).withMultipliedAlpha(0.8f));
+        g.fillRoundedRectangle(r, 3.0f);
+
+        g.setColour(Colours::white.withAlpha(0.4f));
+        g.drawRoundedRectangle(r, 3.0f, 1.0f);
+    }
+}
+
+void PianoRollComponent::resized() {}
+
+void PianoRollComponent::mouseDown(const MouseEvent& e)
+{
+    double beat = pixelToBeatX(e.x);
+    int note = pixelToNoteY(e.y);
+
+    // find if clicking existing note
+    selectedIndex = -1;
+    for (int i = 0; i < midiNotes.size(); ++i)
+        if (noteToRect(midiNotes[i]).contains(e.position))
+            selectedIndex = i;
+
+    if (selectedIndex == -1)
+    {
+        MidiNote m { note, 1.0f, beat, beatsPerGrid };
+        midiNotes.push_back(m);
+        eventBus->publish("PianoRoll.NoteAdded", std::make_any<MidiNote>(m));
+    }
+    repaint();
+}
+
+void PianoRollComponent::mouseDrag(const MouseEvent& e)
+{
+    if (selectedIndex < 0) return;
+    double beat = pixelToBeatX(e.x);
+    midiNotes[selectedIndex].startBeat = beat;
+    repaint();
+}
+
+void PianoRollComponent::mouseUp(const MouseEvent&) { selectedIndex = -1; }
+
+void PianoRollComponent::setZoom(float bps) { beatsPerScreen = bps; repaint(); }
+
+void PianoRollComponent::setNotes(const std::vector<MidiNote>& notes)
+{
+    midiNotes = notes;
+    repaint();
+}
+
+const std::vector<MidiNote>& PianoRollComponent::getNotes() const { return midiNotes; }
+
+void PianoRollComponent::setGridResolution(double beats) { beatsPerGrid = beats; repaint(); }
+
+void PianoRollComponent::clearNotes()
+{
+    midiNotes.clear();
+    repaint();
+}
+
+double PianoRollComponent::pixelToBeatX(float x) const
+{
+    return (x / getWidth()) * beatsPerScreen;
+}
+
+int PianoRollComponent::pixelToNoteY(float y) const
+{
+    return (int)juce::jmap(y, (float)getHeight(), 0.0f, 0.0f, 127.0f);
+}
+
+Rectangle<float> PianoRollComponent::noteToRect(const MidiNote& n) const
+{
+    float x = (n.startBeat / beatsPerScreen) * getWidth();
+    float w = (n.lengthBeats / beatsPerScreen) * getWidth();
+    float h = getHeight() / 128.0f;
+    float y = getHeight() - (n.note * h);
+    return { x, y, w, h };
+}
+🧩 Integration Summary
+Add this to your main component or a new “Clip Editor” panel:
+
+auto* pianoRoll = new PianoRollComponent(&eventBus);
+addAndMakeVisible(pianoRoll);
+pianoRoll->setBounds(20, 200, getWidth() - 40, getHeight() - 220);
+You can now visually:
+
+Click to add notes
+
+Drag to move notes
+
+Scroll horizontally by changing beatsPerScreen
+
+Get MIDI data for playback or AI generation via getNotes()
+
+✅ What This Gives You
+Feature	Description
+Visual MIDI editing	Grid + note blocks for any pitch/timing.
+Mouse input	Click to add, drag to move.
+Dynamic zoom & grid	Adjust beats per screen and quantization.
+EventBus link	AI modules can subscribe to “PianoRoll.NoteAdded” to react in real time.
+You now have a working DAW-level piano roll — the next logical extension is the Clip Sequencer & Arrangement View, where you can drag MIDI or audio clips onto a timeline grid for full track layout.
+
+Keep going into that next?

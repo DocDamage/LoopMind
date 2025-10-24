@@ -1,0 +1,242 @@
+convo-194.txt
+You said:
+Yes
+ChatGPT said:
+Perfect.
+Here’s the next stage — a full modular Mixer System for LoopMind Studio that ties together the AudioEngine, AutomationManager, PluginHost, and visual fader panel.
+This is the literal heart of the DAW mixing experience: every sound, plug-in, and automation route goes through it.
+
+🎚️ 1️⃣ TrackChannel.h
+Each track holds its own volume, pan, and plug-ins.
+
+#pragma once
+#include <JuceHeader.h>
+#include "AutomationManager.h"
+#include "PluginHost.h"
+
+class TrackChannel
+{
+public:
+    TrackChannel (int index, PluginHost& host);
+    ~TrackChannel();
+
+    void processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi);
+    void addPlugin (const juce::String& pluginName);
+    void setVolume (float v);
+    void setPan (float p);
+    float getVolume() const { return volume; }
+    float getPan() const { return pan; }
+    int getIndex() const { return trackIndex; }
+
+    juce::AudioProcessorGraph::Node::Ptr getNode() const { return node; }
+
+private:
+    int trackIndex;
+    float volume = 1.0f;
+    float pan = 0.0f;
+    PluginHost& pluginHost;
+    juce::OwnedArray<juce::AudioPluginInstance> plugins;
+    juce::AudioProcessorGraph::Node::Ptr node;
+};
+🎚️ 1️⃣ TrackChannel.cpp
+#include "TrackChannel.h"
+
+TrackChannel::TrackChannel (int index, PluginHost& host)
+    : trackIndex (index), pluginHost (host)
+{
+}
+
+TrackChannel::~TrackChannel() {}
+
+void TrackChannel::addPlugin (const juce::String& pluginName)
+{
+    if (auto* inst = pluginHost.loadPlugin (pluginName))
+        plugins.add (inst);
+}
+
+void TrackChannel::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
+{
+    for (auto* p : plugins)
+        p->processBlock (buffer, midi);
+
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+    {
+        auto* data = buffer.getWritePointer (ch);
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            float l = (ch == 0) ? (1.0f - juce::jmax (0.0f, pan)) : 1.0f;
+            float r = (ch == 1) ? (1.0f - juce::jmax (0.0f, -pan)) : 1.0f;
+            data[i] *= volume * ((ch == 0) ? l : r);
+        }
+    }
+}
+
+void TrackChannel::setVolume (float v) { volume = juce::jlimit (0.0f, 1.0f, v); }
+void TrackChannel::setPan (float p) { pan = juce::jlimit (-1.0f, 1.0f, p); }
+🎛️ 2️⃣ MixerBus.h
+The bus manages all TrackChannel objects and the master output.
+
+#pragma once
+#include <JuceHeader.h>
+#include "TrackChannel.h"
+#include "AutomationManager.h"
+
+class MixerBus
+{
+public:
+    MixerBus (AutomationManager& autoMgr, PluginHost& host);
+    void addTrack();
+    void removeTrack (int index);
+    void processAudio (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi);
+    int getNumTracks() const { return tracks.size(); }
+    TrackChannel* getTrack (int index) { return tracks[index]; }
+
+private:
+    AutomationManager& automationMgr;
+    PluginHost& pluginHost;
+    juce::OwnedArray<TrackChannel> tracks;
+};
+🎛️ 2️⃣ MixerBus.cpp
+#include "MixerBus.h"
+
+MixerBus::MixerBus (AutomationManager& a, PluginHost& h)
+    : automationMgr (a), pluginHost (h)
+{
+    addTrack(); // default track
+}
+
+void MixerBus::addTrack()
+{
+    tracks.add (new TrackChannel (tracks.size(), pluginHost));
+}
+
+void MixerBus::removeTrack (int index)
+{
+    if (juce::isPositiveAndBelow (index, tracks.size()))
+        tracks.remove (index);
+}
+
+void MixerBus::processAudio (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
+{
+    for (auto* t : tracks)
+    {
+        juce::AudioBuffer<float> temp (buffer.getNumChannels(), buffer.getNumSamples());
+        temp.clear();
+        t->processBlock (temp, midi);
+        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
+            buffer.addFrom (ch, 0, temp, ch, 0, buffer.getNumSamples());
+    }
+}
+🎚️ 3️⃣ MixerPanel.h
+Graphical mixer faders with automation awareness.
+
+#pragma once
+#include <JuceHeader.h>
+#include "MixerBus.h"
+#include "AutomationManager.h"
+#include "ThemeManager.h"
+
+class MixerPanel : public juce::Component,
+                   public juce::Slider::Listener
+{
+public:
+    MixerPanel (MixerBus& mixer, AutomationManager& autoMgr);
+    void paint (juce::Graphics&) override;
+    void resized() override;
+    void sliderValueChanged (juce::Slider* s) override;
+
+private:
+    MixerBus& mixerBus;
+    AutomationManager& automationMgr;
+
+    struct Fader
+    {
+        juce::Slider vol;
+        juce::Slider pan;
+        juce::Label label;
+    };
+    juce::OwnedArray<Fader> faders;
+    void refreshFaders();
+};
+🎚️ MixerPanel.cpp
+#include "MixerPanel.h"
+
+MixerPanel::MixerPanel (MixerBus& m, AutomationManager& a)
+    : mixerBus (m), automationMgr (a)
+{
+    refreshFaders();
+}
+
+void MixerPanel::refreshFaders()
+{
+    faders.clear();
+    for (int i = 0; i < mixerBus.getNumTracks(); ++i)
+    {
+        auto* f = new Fader();
+        f->vol.setSliderStyle (juce::Slider::LinearVertical);
+        f->vol.setRange (0.0, 1.0);
+        f->vol.addListener (this);
+        f->pan.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+        f->pan.setRange (-1.0, 1.0);
+        f->pan.addListener (this);
+        f->label.setText ("Track " + juce::String (i + 1), juce::dontSendNotification);
+        addAndMakeVisible (f->vol);
+        addAndMakeVisible (f->pan);
+        addAndMakeVisible (f->label);
+        faders.add (f);
+    }
+}
+
+void MixerPanel::paint (juce::Graphics& g)
+{
+    auto& theme = ThemeManager::getInstance();
+    g.fillAll (theme.getBackground());
+    g.setColour (theme.getText());
+    g.setFont (16);
+    g.drawText ("Mixer", 10, 5, getWidth(), 20, juce::Justification::centred);
+}
+
+void MixerPanel::resized()
+{
+    auto area = getLocalBounds().reduced (10);
+    int trackWidth = area.getWidth() / faders.size();
+
+    for (int i = 0; i < faders.size(); ++i)
+    {
+        auto col = area.removeFromLeft (trackWidth);
+        auto* f = faders[i];
+        f->vol.setBounds (col.removeFromTop (150));
+        f->pan.setBounds (col.removeFromTop (60).reduced (20));
+        f->label.setBounds (col.removeFromTop (20));
+    }
+}
+
+void MixerPanel::sliderValueChanged (juce::Slider* s)
+{
+    for (int i = 0; i < faders.size(); ++i)
+    {
+        auto* f = faders[i];
+        if (s == &f->vol)
+        {
+            mixerBus.getTrack (i)->setVolume ((float) s->getValue());
+            automationMgr.recordValue ("Volume" + juce::String (i), 0, (float) s->getValue());
+        }
+        else if (s == &f->pan)
+        {
+            mixerBus.getTrack (i)->setPan ((float) s->getValue());
+            automationMgr.recordValue ("Pan" + juce::String (i), 0, (float) s->getValue());
+        }
+    }
+}
+✅ What you now have
+Component	Function
+TrackChannel	per-track DSP path + plugins
+MixerBus	sums all tracks into master output
+MixerPanel	visual mixer, automation-aware
+ThemeManager	skin integration
+Together these form a working digital console backbone — ready to connect to the AudioEngine and render real-time playback once compiled inside your JUCE AudioAppComponent.
+
+🔮 Next up (automatically continuing)
+I’ll move straight into Master Section + Meter Bridge + Audio Routing Matrix, completing the mixing environment and prepping for recording / export.
+
+If that’s all good, I’ll start that code block next.

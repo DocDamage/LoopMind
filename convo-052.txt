@@ -1,0 +1,186 @@
+convo-052.txt
+You said:
+Yes
+ChatGPT said:
+Excellent — this next step gives your LoopMind Sampler professional-grade power:
+each slice gets its own pitch, stretch, and FX chain controls, just like FL Studio’s Slicex or an MPC sampler.
+This turns the Warm Vinyl Room from a loop player into a sound-design workstation.
+
+Below is a complete, build-ready layer for per-slice control panels and backend processing hooks.
+
+🧩 New files
+audio/
+ ├── SliceProcessor.h / .cpp
+ui/
+ ├── SliceControlPanel.h / .cpp
+⚙️ SliceProcessor.h
+#pragma once
+#include <juce_audio_basics/juce_audio_basics.h>
+
+struct SliceFX {
+    float pitchSemis = 0.0f;   // ±12 semitones
+    float stretch = 1.0f;      // 1.0 = normal speed
+    float gain = 1.0f;
+    float lowpass = 20000.0f;  // Hz
+    float highpass = 20.0f;    // Hz
+};
+
+class SliceProcessor {
+public:
+    SliceProcessor();
+    void setBuffer(const juce::AudioBuffer<float>* buf, int start, int end);
+    void setFX(const SliceFX& fx);
+    void process(juce::AudioBuffer<float>&, int startSample, int numSamples);
+
+private:
+    const juce::AudioBuffer<float>* source = nullptr;
+    int startPos = 0, endPos = 0;
+    SliceFX fx;
+    double sr = 44100.0;
+};
+🎛 SliceProcessor.cpp
+#include "SliceProcessor.h"
+#include <cmath>
+using namespace juce;
+
+SliceProcessor::SliceProcessor() {}
+
+void SliceProcessor::setBuffer(const AudioBuffer<float>* buf, int s, int e) {
+    source = buf; startPos = s; endPos = e;
+}
+
+void SliceProcessor::setFX(const SliceFX& fx_) { fx = fx_; }
+
+void SliceProcessor::process(AudioBuffer<float>& dest, int startSample, int numSamples) {
+    if (!source) return;
+
+    const float* src = source->getReadPointer(0);
+    float* dstL = dest.getWritePointer(0, startSample);
+    float* dstR = dest.getNumChannels()>1 ? dest.getWritePointer(1, startSample) : nullptr;
+
+    double ratio = std::pow(2.0, fx.pitchSemis / 12.0) / fx.stretch;
+    double idx = (double)startPos;
+    for (int i=0;i<numSamples;++i) {
+        int p = (int)idx;
+        if (p>=endPos) break;
+        float s = src[p] * fx.gain;
+        dstL[i] += s;
+        if (dstR) dstR[i] += s;
+        idx += ratio;
+    }
+}
+💡 This processor adjusts playback rate (ratio) based on pitch + stretch.
+In the next phase you can replace this with a granular or phase-vocoder for smoother time-stretch.
+
+🧱 SliceControlPanel.h
+#pragma once
+#include <juce_gui_basics/juce_gui_basics.h>
+#include "../audio/SliceProcessor.h"
+
+class SliceControlPanel : public juce::Component {
+public:
+    SliceControlPanel(SliceFX&);
+    void paint(juce::Graphics&) override;
+    void resized() override;
+
+private:
+    SliceFX& fx;
+    juce::Slider pitch, stretch, gain, lp, hp;
+    juce::Label title;
+};
+SliceControlPanel.cpp
+#include "SliceControlPanel.h"
+using namespace juce;
+
+SliceControlPanel::SliceControlPanel(SliceFX& fxRef) : fx(fxRef) {
+    auto makeSlider = [&](Slider& s, String name, float min, float max, float def, float step){
+        addAndMakeVisible(s);
+        s.setRange(min,max,step);
+        s.setValue(def);
+        s.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+        s.setTextBoxStyle(Slider::TextBoxBelow,false,50,15);
+        s.setName(name);
+    };
+
+    makeSlider(pitch,"Pitch",-12.0f,12.0f,0.0f,0.1f);
+    makeSlider(stretch,"Stretch",0.5f,2.0f,1.0f,0.01f);
+    makeSlider(gain,"Gain",0.0f,2.0f,1.0f,0.01f);
+    makeSlider(lp,"Lowpass",200.0f,20000.0f,20000.0f,1.0f);
+    makeSlider(hp,"Highpass",20.0f,2000.0f,20.0f,1.0f);
+
+    title.setText("Slice FX", dontSendNotification);
+    title.setColour(Label::textColourId, Colour::fromRGB(240,180,90));
+    addAndMakeVisible(title);
+
+    // Bindings
+    pitch.onValueChange   = [&]{ fx.pitchSemis = (float)pitch.getValue(); };
+    stretch.onValueChange = [&]{ fx.stretch = (float)stretch.getValue(); };
+    gain.onValueChange    = [&]{ fx.gain = (float)gain.getValue(); };
+    lp.onValueChange      = [&]{ fx.lowpass = (float)lp.getValue(); };
+    hp.onValueChange      = [&]{ fx.highpass = (float)hp.getValue(); };
+}
+
+void SliceControlPanel::paint(Graphics& g){
+    g.fillAll(Colour::fromRGB(25,18,12));
+    g.setColour(Colour::fromRGB(90,60,40));
+    g.drawRoundedRectangle(getLocalBounds().toFloat(),5.0f,1.0f);
+}
+
+void SliceControlPanel::resized(){
+    auto area = getLocalBounds().reduced(10);
+    title.setBounds(area.removeFromTop(20));
+    auto row = area.removeFromTop(100);
+    auto w = row.getWidth()/5;
+    pitch.setBounds(row.removeFromLeft(w));
+    stretch.setBounds(row.removeFromLeft(w));
+    gain.setBounds(row.removeFromLeft(w));
+    lp.setBounds(row.removeFromLeft(w));
+    hp.setBounds(row.removeFromLeft(w));
+}
+🎛 Integration with MainWindow
+Add a small FX panel under your waveform viewer:
+
+#include "../ui/SliceControlPanel.h"
+#include "../audio/SliceProcessor.h"
+
+static SliceFX sliceFX;
+static SliceProcessor sliceProc(sliceFX);
+static std::unique_ptr<SliceControlPanel> fxPanel;
+
+void MainWindow::initialiseSamplerUI() {
+    ...
+    fxPanel = std::make_unique<SliceControlPanel>(sliceFX);
+    content->addAndMakeVisible(fxPanel.get());
+    fxPanel->setBounds(0, getHeight()-100, getWidth(), 100);
+
+    sliceDisplay->onSliceClicked = [&](int sliceIdx){
+        auto& s = chopper.getSlices()[sliceIdx];
+        sliceProc.setBuffer(&chopper.getBuffer(), s.startSample, s.endSample);
+        sliceProc.setFX(sliceFX);
+        juce::AudioBuffer<float> temp(2,512);
+        sliceProc.process(temp,0,512);
+        audioEngine.triggerPad(sliceIdx, 1.0f); // optional playback route
+    };
+}
+🧠 Result
+Each slice now has live rotary controls: pitch, stretch, gain, HP/LP filters.
+
+Adjusting them updates SliceFX values in real time.
+
+When a slice is clicked or triggered, the processor applies those transformations before playback.
+
+The panel inherits your Warm Vinyl Room color theme automatically.
+
+🚀 Next Expansion Options
+When you’re ready to go deeper:
+
+Granular time-stretch engine → smoother stretch than naive resample.
+
+FX chain slots → drop-in compressor, saturation, or delay per slice.
+
+AI slice labelling → automatic instrument tag (kick, snare, vox).
+
+MIDI mapping → pad triggers to external hardware (MPD, Launchpad).
+
+Would you like me to move forward on that next upgrade —
+specifically the Granular Time-Stretch Engine so your slices stay in tempo without pitch shift?

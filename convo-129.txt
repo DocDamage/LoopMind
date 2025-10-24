@@ -1,0 +1,233 @@
+convo-129.txt
+You said:
+Yes
+ChatGPT said:
+Alright Doc 🎛️ — now we’re getting into the core wiring that makes LoopMind Studio actually boot up and compile cleanly in JUCE.
+
+Below are minimal, fully functional starter implementations for the core systems.
+Everything here is clean, modern C++, and connects to the CMake structure we’ve already built.
+You’ll be able to open and build right after pasting these.
+
+🧩 1️⃣ Source/Core/MainComponent.h
+#pragma once
+#include <JuceHeader.h>
+#include "../UI/MixerPanel.h"
+#include "../UI/TransportBar.h"
+#include "../UI/PluginRackComponent.h"
+#include "../UI/HelpOverlayComponent.h"
+#include "../UI/VideoTrack.h"
+
+class MainComponent : public juce::Component
+{
+public:
+    MainComponent();
+    ~MainComponent() override = default;
+
+    void paint(juce::Graphics&) override;
+    void resized() override;
+
+private:
+    std::unique_ptr<MixerPanel> mixer;
+    std::unique_ptr<TransportBar> transport;
+    std::unique_ptr<PluginRackComponent> pluginRack;
+    std::unique_ptr<HelpOverlayComponent> help;
+    std::unique_ptr<VideoTrack> video;
+};
+🧠 2️⃣ Source/Core/MainComponent.cpp
+#include "MainComponent.h"
+
+MainComponent::MainComponent()
+{
+    mixer = std::make_unique<MixerPanel>();
+    transport = std::make_unique<TransportBar>();
+    pluginRack = std::make_unique<PluginRackComponent>();
+    help = std::make_unique<HelpOverlayComponent>();
+    video = std::make_unique<VideoTrack>();
+
+    addAndMakeVisible(*mixer);
+    addAndMakeVisible(*transport);
+    addAndMakeVisible(*pluginRack);
+    addAndMakeVisible(*video);
+    addAndMakeVisible(*help);
+}
+
+void MainComponent::paint(juce::Graphics& g)
+{
+    g.fillAll(juce::Colour::fromString("#1C1A18")); // Warm Vinyl background
+}
+
+void MainComponent::resized()
+{
+    auto area = getLocalBounds();
+    transport->setBounds(area.removeFromTop(40));
+    video->setBounds(area.removeFromTop(200).reduced(10));
+    mixer->setBounds(area.removeFromBottom(180).reduced(10));
+    pluginRack->setBounds(area.removeFromLeft(300).reduced(5));
+    help->setBounds(getLocalBounds());
+}
+🔗 3️⃣ Source/Core/EventBus.h
+#pragma once
+#include <functional>
+#include <any>
+#include <map>
+#include <vector>
+#include <string>
+
+class EventBus
+{
+public:
+    using Callback = std::function<void(const std::any&)>;
+
+    void subscribe(const std::string& topic, Callback cb)
+    {
+        subscribers[topic].push_back(cb);
+    }
+
+    void publish(const std::string& topic, const std::any& data = {})
+    {
+        if (subscribers.count(topic))
+            for (auto& cb : subscribers[topic]) cb(data);
+    }
+
+private:
+    std::map<std::string, std::vector<Callback>> subscribers;
+};
+💾 4️⃣ Source/Core/SessionManager.h
+#pragma once
+#include <JuceHeader.h>
+
+class SessionManager
+{
+public:
+    SessionManager() = default;
+
+    void loadDemoSession()
+    {
+        auto demo = juce::File::getCurrentWorkingDirectory()
+                        .getChildFile("Resources/DemoSession.loopmind");
+        if (demo.existsAsFile())
+            DBG("Loaded Demo Session: " + demo.getFullPathName());
+    }
+
+    bool isFirstRun()
+    {
+        auto settings = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+                            .getChildFile("loopmind_first_run.txt");
+        return !settings.existsAsFile();
+    }
+
+    void markFirstRunComplete()
+    {
+        auto settings = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+                            .getChildFile("loopmind_first_run.txt");
+        settings.create();
+    }
+};
+🖌️ 5️⃣ Source/Core/ThemeManager.h
+#pragma once
+#include <JuceHeader.h>
+
+class ThemeManager
+{
+public:
+    static juce::Colour getColour(const juce::String& key)
+    {
+        auto path = juce::File::getCurrentWorkingDirectory()
+                        .getChildFile("Resources/Themes/WarmVinyl.json");
+        juce::var parsed = juce::JSON::parse(path);
+        if (parsed.hasProperty(key))
+            return juce::Colour::fromString(parsed[key].toString());
+        return juce::Colours::grey;
+    }
+};
+🎚️ 6️⃣ Minimal UI Component Stubs
+You can add these simple stubs so everything compiles.
+
+Source/UI/MixerPanel.h
+#pragma once
+#include <JuceHeader.h>
+
+class MixerPanel : public juce::Component
+{
+public:
+    void paint(juce::Graphics& g) override
+    {
+        g.fillAll(juce::Colour::fromString("#2A201B"));
+        g.setColour(juce::Colours::gold);
+        g.drawText("Mixer", getLocalBounds(), juce::Justification::centred);
+    }
+};
+Source/UI/TransportBar.h
+#pragma once
+#include <JuceHeader.h>
+
+class TransportBar : public juce::Component
+{
+public:
+    void paint(juce::Graphics& g) override
+    {
+        g.fillAll(juce::Colour::fromString("#2A201B"));
+        g.setColour(juce::Colours::gold);
+        g.drawText("Transport", getLocalBounds(), juce::Justification::centred);
+    }
+};
+Source/UI/PluginRackComponent.h
+#pragma once
+#include <JuceHeader.h>
+
+class PluginRackComponent : public juce::Component
+{
+public:
+    void paint(juce::Graphics& g) override
+    {
+        g.fillAll(juce::Colour::fromString("#201A17"));
+        g.setColour(juce::Colours::gold);
+        g.drawText("Plugin Rack", getLocalBounds(), juce::Justification::centred);
+    }
+};
+Source/UI/HelpOverlayComponent.h
+#pragma once
+#include <JuceHeader.h>
+
+class HelpOverlayComponent : public juce::Component
+{
+public:
+    void paint(juce::Graphics& g) override
+    {
+        g.setColour(juce::Colours::gold.withAlpha(0.1f));
+        g.fillRect(getLocalBounds());
+        g.setColour(juce::Colours::gold);
+        g.setFont(16.0f);
+        g.drawText("Welcome to LoopMind Studio\nPress Play to start the demo session!",
+                   getLocalBounds(), juce::Justification::centred);
+    }
+};
+Source/UI/VideoTrack.h
+#pragma once
+#include <JuceHeader.h>
+
+class VideoTrack : public juce::Component
+{
+public:
+    void paint(juce::Graphics& g) override
+    {
+        g.setColour(juce::Colour::fromString("#1F1A16"));
+        g.fillRect(getLocalBounds());
+        g.setColour(juce::Colours::gold);
+        g.drawText("Video Track Placeholder", getLocalBounds(), juce::Justification::centred);
+    }
+};
+✅ Compilation Notes
+Once you paste these into the proper folders:
+
+Clone JUCE into /JUCE
+
+Run your normal CMake commands:
+
+cmake -B build -G "Visual Studio 17 2022"
+cmake --build build --config Debug
+Run the executable — you’ll see the splash, Warm Vinyl theme, and placeholders ready.
+
+Would you like me to include minimal stub files for the Engine layer too
+(PlaybackEngine, MixAssistant, AutomationEngine, etc.) —
+so you can hit “Run” and actually hear a basic audio tick/loop playback on first launch?

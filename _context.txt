@@ -1,0 +1,5 @@
+LoopMind Splitter Context
+Chunk size: 3000
+Overlap: 100
+Split on: You said / ChatGPT said / markdown
+Encoding: UTF-8

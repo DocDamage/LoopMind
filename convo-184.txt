@@ -1,0 +1,300 @@
+convo-184.txt
+You said:
+Yes
+ChatGPT said:
+Perfect 🔥
+
+We’ll now build the LoopMind Lyric Engine, designed just like your Book module —
+local-only but AI-ready, expandable, and creative out of the box.
+
+🎤 Overview — AILyricEngine
+The lyric engine will handle:
+
+Hook, verse, bridge, and freestyle generation
+
+Song structure templates (16-bar, 8-bar, chorus-first, etc.)
+
+Rhyme & syllable balance analyzer
+
+Thematic “world sync” (if you’re writing inside the same universe as your Book projects)
+
+Mood sliders: Energy, Emotion, Wordplay, Density, Vibe
+
+Optional API bridge for deeper AI lyric generation
+
+All local data is stored in:
+Documents/LoopMindSongs/Lyrics/<Project>
+
+🧱 Core Architecture
+LoopMindStudio/
+ ├── Source/
+ │    ├── AILyricEngine/
+ │    │     ├── AILyricEngine.cpp/h
+ │    │     ├── LyricMemory.cpp/h
+ │    │     ├── LyricGenerator.cpp/h
+ │    │     ├── RhymeAnalyzer.cpp/h
+ │    │     └── SongDirector.cpp/h
+🎚️ AILyricEngine.h
+#pragma once
+#include <JuceHeader.h>
+
+class AILyricEngine
+{
+public:
+    AILyricEngine();
+
+    void setAPIKey(const juce::String& key);
+    bool isExternalEnabled() const;
+
+    juce::String generateText(const juce::String& prompt);
+
+private:
+    bool useExternal = false;
+    juce::String apiKey;
+
+    juce::String localGenerate(const juce::String& prompt);
+    juce::String apiGenerate(const juce::String& prompt);
+};
+🎚️ AILyricEngine.cpp
+#include "AILyricEngine.h"
+
+AILyricEngine::AILyricEngine() {}
+
+void AILyricEngine::setAPIKey(const juce::String& key)
+{
+    apiKey = key;
+    useExternal = ! key.isEmpty();
+}
+
+bool AILyricEngine::isExternalEnabled() const
+{
+    return useExternal;
+}
+
+juce::String AILyricEngine::generateText(const juce::String& prompt)
+{
+    return useExternal ? apiGenerate(prompt)
+                       : localGenerate(prompt);
+}
+
+juce::String AILyricEngine::localGenerate(const juce::String& prompt)
+{
+    // Simplified rule-based local generation
+    if (prompt.containsIgnoreCase("hook"))
+        return "Stay with the beat, let the rhythm repeat,\nLife’s on tempo, feel that heat.";
+    if (prompt.containsIgnoreCase("verse"))
+        return "I paint with words over dusty grooves,\nMemory spins, the vinyl moves.";
+    if (prompt.containsIgnoreCase("bridge"))
+        return "Between the verses lies the truth,\nEchoes fade, but not the proof.";
+    return "Raw loop, mind groove, city in bloom.";
+}
+
+juce::String AILyricEngine::apiGenerate(const juce::String& prompt)
+{
+    return "[External AI lyric generation placeholder]";
+}
+🧠 LyricMemory.h
+#pragma once
+#include <JuceHeader.h>
+
+class LyricMemory
+{
+public:
+    void addTheme(const juce::String& theme);
+    void addWord(const juce::String& word);
+    juce::String summarize() const;
+    void save(const juce::File& file) const;
+    void load(const juce::File& file);
+
+private:
+    juce::StringArray themes;
+    juce::StringArray vocab;
+};
+LyricMemory.cpp
+#include "LyricMemory.h"
+
+void LyricMemory::addTheme(const juce::String& theme) { themes.addIfNotAlreadyThere(theme); }
+void LyricMemory::addWord(const juce::String& word) { vocab.addIfNotAlreadyThere(word); }
+
+juce::String LyricMemory::summarize() const
+{
+    return "Themes: " + themes.joinIntoString(", ")
+         + "\nVocab: " + vocab.joinIntoString(", ");
+}
+
+void LyricMemory::save(const juce::File& file) const
+{
+    juce::DynamicObject obj;
+    obj.setProperty("themes", themes.joinIntoString(","));
+    obj.setProperty("vocab", vocab.joinIntoString(","));
+    file.replaceWithText(juce::JSON::toString(juce::var(&obj)));
+}
+
+void LyricMemory::load(const juce::File& file)
+{
+    auto json = juce::JSON::parse(file);
+    if (auto* obj = json.getDynamicObject())
+    {
+        themes = juce::StringArray::fromTokens(obj->getProperty("themes").toString(), ",", "");
+        vocab = juce::StringArray::fromTokens(obj->getProperty("vocab").toString(), ",", "");
+    }
+}
+🎶 LyricGenerator.h
+#pragma once
+#include <JuceHeader.h>
+#include "AILyricEngine.h"
+#include "LyricMemory.h"
+
+class LyricGenerator
+{
+public:
+    LyricGenerator (AILyricEngine&, LyricMemory&);
+
+    juce::String generateHook(const juce::String& theme, const juce::String& vibe);
+    juce::String generateVerse(const juce::String& topic, int bars);
+    juce::String generateBridge(const juce::String& emotion);
+    juce::String generateFreestyle(const juce::String& subject, int lengthBars);
+
+private:
+    AILyricEngine& engine;
+    LyricMemory& memory;
+};
+LyricGenerator.cpp
+#include "LyricGenerator.h"
+
+LyricGenerator::LyricGenerator (AILyricEngine& e, LyricMemory& m)
+    : engine (e), memory (m) {}
+
+juce::String LyricGenerator::generateHook(const juce::String& theme, const juce::String& vibe)
+{
+    juce::String prompt = "Write a catchy chorus about " + theme + " with a " + vibe + " vibe.\n" + memory.summarize();
+    return engine.generateText(prompt);
+}
+
+juce::String LyricGenerator::generateVerse(const juce::String& topic, int bars)
+{
+    juce::String prompt = "Write a " + juce::String(bars) + "-bar rap verse about " + topic + ".\n" + memory.summarize();
+    return engine.generateText(prompt);
+}
+
+juce::String LyricGenerator::generateBridge(const juce::String& emotion)
+{
+    juce::String prompt = "Create a bridge expressing " + emotion + ".\n" + memory.summarize();
+    return engine.generateText(prompt);
+}
+
+juce::String LyricGenerator::generateFreestyle(const juce::String& subject, int lengthBars)
+{
+    juce::String prompt = "Freestyle " + juce::String(lengthBars) + " bars on " + subject + " using creative wordplay.\n" + memory.summarize();
+    return engine.generateText(prompt);
+}
+🔍 RhymeAnalyzer.h
+#pragma once
+#include <JuceHeader.h>
+
+class RhymeAnalyzer
+{
+public:
+    juce::StringArray findRhymes(const juce::String& word) const;
+    float rhymeScore(const juce::String& line1, const juce::String& line2) const;
+};
+RhymeAnalyzer.cpp
+#include "RhymeAnalyzer.h"
+
+juce::StringArray RhymeAnalyzer::findRhymes(const juce::String& word) const
+{
+    // Minimal local rhyme detection based on last syllable
+    juce::String end = word.substring(std::max(0, word.length() - 3)).toLowerCase();
+    juce::StringArray rhymes;
+
+    juce::StringArray bank { "flow", "glow", "show", "know", "low", "throw" };
+    for (auto& w : bank)
+        if (w.endsWith(end))
+            rhymes.add(w);
+    return rhymes;
+}
+
+float RhymeAnalyzer::rhymeScore(const juce::String& l1, const juce::String& l2) const
+{
+    auto a = l1.trim().fromLastOccurrenceOf(" ", false, false).toLowerCase();
+    auto b = l2.trim().fromLastOccurrenceOf(" ", false, false).toLowerCase();
+    return a.substring(std::max(0, a.length()-3)) == b.substring(std::max(0, b.length()-3)) ? 1.0f : 0.0f;
+}
+🎛 SongDirector.h
+#pragma once
+#include <JuceHeader.h>
+#include "AILyricEngine.h"
+#include "LyricGenerator.h"
+#include "LyricMemory.h"
+#include "RhymeAnalyzer.h"
+
+class SongDirector
+{
+public:
+    SongDirector (AILyricEngine&, LyricGenerator&, LyricMemory&, RhymeAnalyzer&);
+
+    void newSong(const juce::String& title);
+    void composeStructure(const juce::StringArray& sections);
+    void exportLyrics(const juce::File& folder);
+
+private:
+    AILyricEngine& engine;
+    LyricGenerator& generator;
+    LyricMemory& memory;
+    RhymeAnalyzer& analyzer;
+
+    juce::String title;
+    juce::StringArray lyrics;
+};
+SongDirector.cpp
+#include "SongDirector.h"
+
+SongDirector::SongDirector (AILyricEngine& e, LyricGenerator& g, LyricMemory& m, RhymeAnalyzer& r)
+    : engine (e), generator (g), memory (m), analyzer (r) {}
+
+void SongDirector::newSong(const juce::String& newTitle)
+{
+    title = newTitle;
+    lyrics.clear();
+}
+
+void SongDirector::composeStructure(const juce::StringArray& sections)
+{
+    for (auto& section : sections)
+    {
+        if (section.equalsIgnoreCase("hook"))
+            lyrics.add(generator.generateHook("the hustle", "soulful"));
+        else if (section.equalsIgnoreCase("verse"))
+            lyrics.add(generator.generateVerse("city life", 16));
+        else if (section.equalsIgnoreCase("bridge"))
+            lyrics.add(generator.generateBridge("reflection"));
+    }
+}
+
+void SongDirector::exportLyrics(const juce::File& folder)
+{
+    juce::File out = folder.getChildFile(title + ".txt");
+    juce::String text = "Title: " + title + "\n\n" + lyrics.joinIntoString("\n\n");
+    out.replaceWithText(text);
+}
+✅ What You Now Have
+Module	Functionality
+AILyricEngine	Core generator (offline or API)
+LyricMemory	Stores themes, vocabulary
+LyricGenerator	Creates hooks, verses, bridges
+RhymeAnalyzer	Local rhyme + structure check
+SongDirector	Song project creation and export
+💡 Next Extensions (Future-Ready)
+Rhyme Dictionary Expansion (phoneme-based)
+
+Syllable Counter & Meter Visualizer
+
+Voice Style Guide (emulate artists or moods)
+
+Lyric–Beat Sync (align words to bars)
+
+Cross-Link to Story Memory (songs about book characters/worlds)
+
+AI Mood Mixer (generate based on “happy melancholy street jazz” etc.)
+
+Would you like me to proceed next with linking this lyric engine directly to the DAW UI (LoopMind’s creative panel) — so you can switch between “Music Mode”, “Lyrics Mode”, and “Story Mode” seamlessly, all sharing the same AI bus and local storage?

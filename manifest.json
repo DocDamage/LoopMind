@@ -1,0 +1,1115 @@
+{
+  "source_file": "LoopMind Studio - Full Convo and Code.txt",
+  "source_sha1": "84972ccff540619dc9563677e0ecca35d6179264",
+  "created": "2025-10-24T13:22:45",
+  "chunk_size": 3000,
+  "overlap": 100,
+  "total_files": 221,
+  "files": [
+    {
+      "file": "convo-001.txt",
+      "sha1": "499fd78919f5ada392251f9f0175d2a416b21292",
+      "chars": 9528
+    },
+    {
+      "file": "convo-002.txt",
+      "sha1": "7d52f060394aaeb9fd331ffee929bad9438451d1",
+      "chars": 9545
+    },
+    {
+      "file": "convo-003.txt",
+      "sha1": "fa0bc24d1e71b660e2c3603ab86e82c65b7cede9",
+      "chars": 10047
+    },
+    {
+      "file": "convo-004.txt",
+      "sha1": "0907e7c6ed3e505245a9e11248d7d12eb3a7d350",
+      "chars": 10123
+    },
+    {
+      "file": "convo-005.txt",
+      "sha1": "68301a3c640dddd600a20d41a7cddd9c42482b40",
+      "chars": 10690
+    },
+    {
+      "file": "convo-006.txt",
+      "sha1": "446347d9261843d3d1c113caee65e7116e6edab9",
+      "chars": 11230
+    },
+    {
+      "file": "convo-007.txt",
+      "sha1": "bee1e0c549db35c725a7420b4ce6ba200b313267",
+      "chars": 9506
+    },
+    {
+      "file": "convo-008.txt",
+      "sha1": "9983d72c5da4e74b81eb9e8d5f86d6ca574652d2",
+      "chars": 9262
+    },
+    {
+      "file": "convo-009.txt",
+      "sha1": "4551618cc0c65796e9b413fb6460f88d01e8c100",
+      "chars": 11006
+    },
+    {
+      "file": "convo-010.txt",
+      "sha1": "807c290fc91a262e212e769db334db796561b3c0",
+      "chars": 12063
+    },
+    {
+      "file": "convo-011.txt",
+      "sha1": "f5580e73c170aa606ab7afe254951a9f32dc350e",
+      "chars": 8752
+    },
+    {
+      "file": "convo-012.txt",
+      "sha1": "b1ecca5f6ccdaaf3719ff3045cd30d0fa49a230f",
+      "chars": 11138
+    },
+    {
+      "file": "convo-013.txt",
+      "sha1": "c196bb2ef7a738f2f2390ffbc38b1becb93629a4",
+      "chars": 12039
+    },
+    {
+      "file": "convo-014.txt",
+      "sha1": "94c45a670d85912353a3d372f861d0799ce0fb95",
+      "chars": 6751
+    },
+    {
+      "file": "convo-015.txt",
+      "sha1": "e4cf6c40550f96c1a6deadcd561dbf8a5f70ee6c",
+      "chars": 7331
+    },
+    {
+      "file": "convo-016.txt",
+      "sha1": "4755e316bcfe6fc0d6528604d710fe091d6f00f4",
+      "chars": 6842
+    },
+    {
+      "file": "convo-017.txt",
+      "sha1": "9ce566ecc616514ded212742d2f9f8790b8d4091",
+      "chars": 7121
+    },
+    {
+      "file": "convo-018.txt",
+      "sha1": "5c558f377b57b1f83cfd551f082bc694c3f3de3b",
+      "chars": 7824
+    },
+    {
+      "file": "convo-019.txt",
+      "sha1": "2d844ddcc5431640e520d2548c2c96dc2c6c475f",
+      "chars": 6139
+    },
+    {
+      "file": "convo-020.txt",
+      "sha1": "f06ebffc9889aadae5c7686b2cc31e3337625b7e",
+      "chars": 7257
+    },
+    {
+      "file": "convo-021.txt",
+      "sha1": "596e8b16a070897d48beb058d46b83965c6b1d3e",
+      "chars": 8181
+    },
+    {
+      "file": "convo-022.txt",
+      "sha1": "a590505fb6be16634d9db6c280ee258bb04d4cf7",
+      "chars": 7002
+    },
+    {
+      "file": "convo-023.txt",
+      "sha1": "1c2f060400ae4bffa2ae04dcd7de8792ff964f22",
+      "chars": 6811
+    },
+    {
+      "file": "convo-024.txt",
+      "sha1": "22d20f8fa360cb859e93da4262f4a9df381b67b7",
+      "chars": 7507
+    },
+    {
+      "file": "convo-025.txt",
+      "sha1": "460b2d7c10a6370d50a2be086ae71bbb7cf213af",
+      "chars": 7633
+    },
+    {
+      "file": "convo-026.txt",
+      "sha1": "0382f643f6c057f2d59b76f8df5c3791772155cf",
+      "chars": 7767
+    },
+    {
+      "file": "convo-027.txt",
+      "sha1": "ff765f1d6b4939c19ce4d46b1dc7a905d3598e5e",
+      "chars": 11677
+    },
+    {
+      "file": "convo-028.txt",
+      "sha1": "d4ed9c4296056fa7d2b2f3de8f3f87c39ce16f4a",
+      "chars": 7929
+    },
+    {
+      "file": "convo-029.txt",
+      "sha1": "919e880d4f546917bac64088309b238d5a26d97a",
+      "chars": 6360
+    },
+    {
+      "file": "convo-030.txt",
+      "sha1": "f069c56ea1d4b9d0cff758e1f643ddd3b1dff8d4",
+      "chars": 8086
+    },
+    {
+      "file": "convo-031.txt",
+      "sha1": "36069fc67d842a077d078233994e6600b9a8561d",
+      "chars": 6949
+    },
+    {
+      "file": "convo-032.txt",
+      "sha1": "9af32bc7354b8c4e177e22da997c15fe83251acf",
+      "chars": 7681
+    },
+    {
+      "file": "convo-033.txt",
+      "sha1": "36220088592253908e68c9f0857ef794f13ea979",
+      "chars": 6644
+    },
+    {
+      "file": "convo-034.txt",
+      "sha1": "d87ba549f9ad0e0a565dccdffdf0a091ccb630f4",
+      "chars": 7184
+    },
+    {
+      "file": "convo-035.txt",
+      "sha1": "2db74d794a3818589e77adf0f09579c8da50e17a",
+      "chars": 7586
+    },
+    {
+      "file": "convo-036.txt",
+      "sha1": "583cfd6af651e1e8fa25642fa3e988d0c7b075d1",
+      "chars": 7150
+    },
+    {
+      "file": "convo-037.txt",
+      "sha1": "1d364c32feeed5ee93af94c2451bcba325119405",
+      "chars": 6622
+    },
+    {
+      "file": "convo-038.txt",
+      "sha1": "4948d78597a0f68201d1499008617d10268dea76",
+      "chars": 7356
+    },
+    {
+      "file": "convo-039.txt",
+      "sha1": "6ab79b19854165f0b3e83c96a1b1cc3714364a22",
+      "chars": 7420
+    },
+    {
+      "file": "convo-040.txt",
+      "sha1": "61990764e854f9895e38d0798dadf13a9b94ff78",
+      "chars": 6674
+    },
+    {
+      "file": "convo-041.txt",
+      "sha1": "d9dca8ed392a408ed5864ccd759df0f1a6d1d4bd",
+      "chars": 7054
+    },
+    {
+      "file": "convo-042.txt",
+      "sha1": "419149d88659425ea0f30efe3827ec54eaad132c",
+      "chars": 6720
+    },
+    {
+      "file": "convo-043.txt",
+      "sha1": "f55d3da81ae52551eaea09e48909fae7f719b22b",
+      "chars": 10692
+    },
+    {
+      "file": "convo-044.txt",
+      "sha1": "19ba1c0e522f87907b153a4af335ea4eb023687f",
+      "chars": 11665
+    },
+    {
+      "file": "convo-045.txt",
+      "sha1": "b6752187cc9a5eed5381814a955a84ba22d9b417",
+      "chars": 10349
+    },
+    {
+      "file": "convo-046.txt",
+      "sha1": "5a7485007f62943c368eaaff5c04d4dec3ea7788",
+      "chars": 8958
+    },
+    {
+      "file": "convo-047.txt",
+      "sha1": "06ec29c5b246f123320df738ceefa4ab723aa37b",
+      "chars": 11636
+    },
+    {
+      "file": "convo-048.txt",
+      "sha1": "5c0077459e75037bc4e9a805ae33e740a3d5ac03",
+      "chars": 9591
+    },
+    {
+      "file": "convo-049.txt",
+      "sha1": "61e720becccebc4fd9cf85c084b5e0918647dc6b",
+      "chars": 11017
+    },
+    {
+      "file": "convo-050.txt",
+      "sha1": "ad54e28bc8ac868262b787be05f02e08fd628b4a",
+      "chars": 6877
+    },
+    {
+      "file": "convo-051.txt",
+      "sha1": "a24717c4ccc0cb762e6f38b8d3793ea7f65ac33b",
+      "chars": 6154
+    },
+    {
+      "file": "convo-052.txt",
+      "sha1": "b09c6f268c33e61d91a763a8ba5ba8a181fa008d",
+      "chars": 6273
+    },
+    {
+      "file": "convo-053.txt",
+      "sha1": "cffac0cb8e430f48138ae03f76ab9db50c2f08bb",
+      "chars": 5209
+    },
+    {
+      "file": "convo-054.txt",
+      "sha1": "2f04ac23bd12e6808d7a24c3cf9deac42a6cc814",
+      "chars": 5977
+    },
+    {
+      "file": "convo-055.txt",
+      "sha1": "82a2ca4fa8277c59804d5b84ac4e8e323b46517c",
+      "chars": 5719
+    },
+    {
+      "file": "convo-056.txt",
+      "sha1": "d64472051e07f32d024b5210acdc48286e966e19",
+      "chars": 6256
+    },
+    {
+      "file": "convo-057.txt",
+      "sha1": "51d5d9bc4943fd75453e416eed7fceab413f9bf6",
+      "chars": 6398
+    },
+    {
+      "file": "convo-058.txt",
+      "sha1": "3f17926352a1085159ae39f9e72ac5b937a27611",
+      "chars": 6784
+    },
+    {
+      "file": "convo-059.txt",
+      "sha1": "ebb0b290a97c20050eb96e46d0adefcc16f87f3e",
+      "chars": 8659
+    },
+    {
+      "file": "convo-060.txt",
+      "sha1": "55a6c839fa071209fa3a3d71f5d87faf6d924a03",
+      "chars": 6354
+    },
+    {
+      "file": "convo-061.txt",
+      "sha1": "991abd98fb914b196b43d60e54fad17ffcedb2a4",
+      "chars": 7548
+    },
+    {
+      "file": "convo-062.txt",
+      "sha1": "11dbcfc4fa454797f46cea4acd9940bba7a831fd",
+      "chars": 7675
+    },
+    {
+      "file": "convo-063.txt",
+      "sha1": "62615af48fb57e6db56ce18a4e770e578f9886f9",
+      "chars": 9199
+    },
+    {
+      "file": "convo-064.txt",
+      "sha1": "e9ad9ee0f82e82e71ca23ef0f32a8c79e89f946d",
+      "chars": 7726
+    },
+    {
+      "file": "convo-065.txt",
+      "sha1": "69e81565bfaf765fa5e50adfc4624fc88c820cbf",
+      "chars": 6834
+    },
+    {
+      "file": "convo-066.txt",
+      "sha1": "d892d5c6a1471ee5714ed67e7abc2ec5cd10a9e6",
+      "chars": 11222
+    },
+    {
+      "file": "convo-067.txt",
+      "sha1": "ba854b4753f4ce6c96eb2d3c200ec805cc821173",
+      "chars": 10733
+    },
+    {
+      "file": "convo-068.txt",
+      "sha1": "50460bc787ae04d8c5108929bc81c71a7d15e27c",
+      "chars": 6802
+    },
+    {
+      "file": "convo-069.txt",
+      "sha1": "e9dc7393b6cbf5593f27869f220c219f3f336aa9",
+      "chars": 5699
+    },
+    {
+      "file": "convo-070.txt",
+      "sha1": "a2b2007af0db33247e15b732fd07b40dc1ab21be",
+      "chars": 7844
+    },
+    {
+      "file": "convo-071.txt",
+      "sha1": "0059abb5ad822bf377d0579bbd5772706325bad3",
+      "chars": 6507
+    },
+    {
+      "file": "convo-072.txt",
+      "sha1": "ec74fff2afa39621ca13a05703c36fe381690fee",
+      "chars": 9338
+    },
+    {
+      "file": "convo-073.txt",
+      "sha1": "799895e994b9abcf5410ffa5f253a45ae100d956",
+      "chars": 9935
+    },
+    {
+      "file": "convo-074.txt",
+      "sha1": "dc606e841595a3c4fef5b1ecf8824a664c81d8dc",
+      "chars": 8909
+    },
+    {
+      "file": "convo-075.txt",
+      "sha1": "1d0edd7f42e94c9a722dba287b31a1bed210d2a9",
+      "chars": 7354
+    },
+    {
+      "file": "convo-076.txt",
+      "sha1": "34bb859a8da164fc25f1fc25c4fb807adc69c1ff",
+      "chars": 9510
+    },
+    {
+      "file": "convo-077.txt",
+      "sha1": "c5c513b0b625e8d6de9b6bed8d588fbd94fff970",
+      "chars": 7350
+    },
+    {
+      "file": "convo-078.txt",
+      "sha1": "31a65468e2827a93118451fb24a9e39d1563ae33",
+      "chars": 7531
+    },
+    {
+      "file": "convo-079.txt",
+      "sha1": "0559545e18c408d571289e7c72a2da60f707a759",
+      "chars": 5136
+    },
+    {
+      "file": "convo-080.txt",
+      "sha1": "8d55f67708577390652b647243aea03224eedc70",
+      "chars": 10243
+    },
+    {
+      "file": "convo-081.txt",
+      "sha1": "a3e6cab43d57e62c95a2e6ff1217f3b41647b50b",
+      "chars": 9662
+    },
+    {
+      "file": "convo-082.txt",
+      "sha1": "804af2f1760c29804d7f859b52c6003d8cb7470a",
+      "chars": 11592
+    },
+    {
+      "file": "convo-083.txt",
+      "sha1": "4564ec67dd0249f90b65bf10f54afb0f30ff0028",
+      "chars": 11397
+    },
+    {
+      "file": "convo-084.txt",
+      "sha1": "ca2fa65975cd3f185eac97a313455e93f97a254b",
+      "chars": 10779
+    },
+    {
+      "file": "convo-085.txt",
+      "sha1": "18fd6f7a6018d1c494409c9a470bb35e16396811",
+      "chars": 9220
+    },
+    {
+      "file": "convo-086.txt",
+      "sha1": "949eb062e50ae3f45dc8c846fd3b5adfe87419d4",
+      "chars": 9793
+    },
+    {
+      "file": "convo-087.txt",
+      "sha1": "406e415243fa7390316c007acc5766e0b27bb028",
+      "chars": 11978
+    },
+    {
+      "file": "convo-088.txt",
+      "sha1": "d21ab5bb59724f9b4e35c09840e6aa85a60e6b57",
+      "chars": 11545
+    },
+    {
+      "file": "convo-089.txt",
+      "sha1": "627804b6575855a40eb5ca8c503a2cd28dda20ed",
+      "chars": 9115
+    },
+    {
+      "file": "convo-090.txt",
+      "sha1": "c73085dc32d5cb49837255a6793423ac5f56e607",
+      "chars": 11527
+    },
+    {
+      "file": "convo-091.txt",
+      "sha1": "704dd2c223fc1f77e94be2cb5c198757e884e054",
+      "chars": 9343
+    },
+    {
+      "file": "convo-092.txt",
+      "sha1": "f12cd489a4a5281e824a96e33b40279a677ad8f5",
+      "chars": 6256
+    },
+    {
+      "file": "convo-093.txt",
+      "sha1": "98b18217e24e5d08354249c2254f45040e01b1aa",
+      "chars": 6746
+    },
+    {
+      "file": "convo-094.txt",
+      "sha1": "3d6bb8c42441d26262a29b65c7a9cc8c50549b84",
+      "chars": 6822
+    },
+    {
+      "file": "convo-095.txt",
+      "sha1": "849bff4c54e2523140b6105eab34e200922c42f0",
+      "chars": 6867
+    },
+    {
+      "file": "convo-096.txt",
+      "sha1": "54ff30671b45b6b18c447b5f92a7ec56c4588374",
+      "chars": 11105
+    },
+    {
+      "file": "convo-097.txt",
+      "sha1": "b140411fb57dc4759608f4a23f82b124e9f13eda",
+      "chars": 10599
+    },
+    {
+      "file": "convo-098.txt",
+      "sha1": "e10a727650fa789ca7e7c2688a2b1db267f2345e",
+      "chars": 11033
+    },
+    {
+      "file": "convo-099.txt",
+      "sha1": "24520d559bf4c075078c55101eaf2a4a7ff4b4ca",
+      "chars": 5566
+    },
+    {
+      "file": "convo-100.txt",
+      "sha1": "96efd664ebd4fb188985fb73770def83dd1446bd",
+      "chars": 7196
+    },
+    {
+      "file": "convo-101.txt",
+      "sha1": "5a99faa62cdd8b6ee31b2828ea73e6095d206d03",
+      "chars": 8970
+    },
+    {
+      "file": "convo-102.txt",
+      "sha1": "74b384c611af75ee9c659304e182f0a5c80440f0",
+      "chars": 10052
+    },
+    {
+      "file": "convo-103.txt",
+      "sha1": "f394b571b614dbb484e4d85173429c6d4d9dec5e",
+      "chars": 9738
+    },
+    {
+      "file": "convo-104.txt",
+      "sha1": "f960148cb914b9d556a87d982d8c02d49a69c59d",
+      "chars": 9018
+    },
+    {
+      "file": "convo-105.txt",
+      "sha1": "5fe34262486980ee8ae665890749676870952f55",
+      "chars": 10703
+    },
+    {
+      "file": "convo-106.txt",
+      "sha1": "b1a2118ce3ead55bed0af80a6eb85bf6a11965ed",
+      "chars": 9448
+    },
+    {
+      "file": "convo-107.txt",
+      "sha1": "45f227ede1c197ddd9108e45c551a791a2f9d30b",
+      "chars": 5712
+    },
+    {
+      "file": "convo-108.txt",
+      "sha1": "01aa47b35aa9bf3ff2cbc0b5a80a6eac8510bf48",
+      "chars": 6984
+    },
+    {
+      "file": "convo-109.txt",
+      "sha1": "69507457483c0c94130ac634ce17f472daea4046",
+      "chars": 5942
+    },
+    {
+      "file": "convo-110.txt",
+      "sha1": "890e97bec0ffc360ed205f0b370126d2462c6044",
+      "chars": 7961
+    },
+    {
+      "file": "convo-111.txt",
+      "sha1": "400f8fca8fc18273b90b272db0220ab073d796e6",
+      "chars": 8035
+    },
+    {
+      "file": "convo-112.txt",
+      "sha1": "193bae1a1acd343e7cb88d3169a82cb6d8f70a96",
+      "chars": 12034
+    },
+    {
+      "file": "convo-113.txt",
+      "sha1": "5b959d881276a73f600932f767cfc4c804f022d0",
+      "chars": 5675
+    },
+    {
+      "file": "convo-114.txt",
+      "sha1": "32e931b158bccf6e7e8ca40355bec67bdde96f63",
+      "chars": 10069
+    },
+    {
+      "file": "convo-115.txt",
+      "sha1": "4650bdccfd413921c1c8ba304658240ac5a9824e",
+      "chars": 8316
+    },
+    {
+      "file": "convo-116.txt",
+      "sha1": "50b39870f9017824ac6cdaf2603b0b25a6996ef7",
+      "chars": 11266
+    },
+    {
+      "file": "convo-117.txt",
+      "sha1": "3aad0bf28250af153a5f65cf3cc04cb26a99b20d",
+      "chars": 6294
+    },
+    {
+      "file": "convo-118.txt",
+      "sha1": "aec9e22db44d118b3e4c6b1b5601fa540c6c46ff",
+      "chars": 5547
+    },
+    {
+      "file": "convo-119.txt",
+      "sha1": "2884575fd2f228e7eefb064e55a3ebbd439ee57e",
+      "chars": 9816
+    },
+    {
+      "file": "convo-120.txt",
+      "sha1": "29238f011439c3d145734a7e8430dd8b72365bd0",
+      "chars": 10542
+    },
+    {
+      "file": "convo-121.txt",
+      "sha1": "2c8a2748b736323c0b0c89ebe28bc4db20afa5aa",
+      "chars": 10077
+    },
+    {
+      "file": "convo-122.txt",
+      "sha1": "efe34afa333df003db9075019335745f3e8823ab",
+      "chars": 11243
+    },
+    {
+      "file": "convo-123.txt",
+      "sha1": "2d52b00f1d5ebafb8267dfd29027b02e7c74e4e4",
+      "chars": 11656
+    },
+    {
+      "file": "convo-124.txt",
+      "sha1": "5b3d6a59eaab286f1f8636126e7ec85c64e77015",
+      "chars": 6177
+    },
+    {
+      "file": "convo-125.txt",
+      "sha1": "545431ae1e0ee509334876e2ecb2585e935c72e3",
+      "chars": 11466
+    },
+    {
+      "file": "convo-126.txt",
+      "sha1": "d4cb5542e991ca24296aaceac0eeb23fef222225",
+      "chars": 11558
+    },
+    {
+      "file": "convo-127.txt",
+      "sha1": "48765d7852eb7db4985499e67afd3eff1525a479",
+      "chars": 10599
+    },
+    {
+      "file": "convo-128.txt",
+      "sha1": "ee087595a8a9f57dba2dcdbc830ebc9e206f9965",
+      "chars": 6306
+    },
+    {
+      "file": "convo-129.txt",
+      "sha1": "1d7b8cfcffaf841f53ac2cdd7c6c0c33e4f24982",
+      "chars": 6620
+    },
+    {
+      "file": "convo-130.txt",
+      "sha1": "2e90af0b6d6e2f704b5053b2e60e7ffead229420",
+      "chars": 12171
+    },
+    {
+      "file": "convo-131.txt",
+      "sha1": "f535e1a0f77a646bcec0c4f4285a71f8c2aa88db",
+      "chars": 10089
+    },
+    {
+      "file": "convo-132.txt",
+      "sha1": "315c84de4d14b48ae6327f24aa42ba7c02cf21b5",
+      "chars": 9023
+    },
+    {
+      "file": "convo-133.txt",
+      "sha1": "984d19ebae33852e30ce2f975719b44d1c8ad210",
+      "chars": 5623
+    },
+    {
+      "file": "convo-134.txt",
+      "sha1": "ebb685715a5ac4c6590446838a73ab6209148df1",
+      "chars": 12250
+    },
+    {
+      "file": "convo-135.txt",
+      "sha1": "a7ba8624fdb939e92a67b19a2dd8d0c6c11840ae",
+      "chars": 8098
+    },
+    {
+      "file": "convo-136.txt",
+      "sha1": "ffefc28698c3917f5be8656835473ee49286d3d4",
+      "chars": 11025
+    },
+    {
+      "file": "convo-137.txt",
+      "sha1": "78d06a5ea5abc09a8e7f5b57ab6d18f5f693083e",
+      "chars": 6525
+    },
+    {
+      "file": "convo-138.txt",
+      "sha1": "6778d607084ea3f77ccbf722abd85b0d43d0161c",
+      "chars": 10331
+    },
+    {
+      "file": "convo-139.txt",
+      "sha1": "d85c3f25157109b10d87bf1050b5ca3ebc133861",
+      "chars": 7369
+    },
+    {
+      "file": "convo-140.txt",
+      "sha1": "d43f7183a1141887a75ed6b171ec8d74a887c200",
+      "chars": 11903
+    },
+    {
+      "file": "convo-141.txt",
+      "sha1": "4b0f9fdb768113132b1bce4f91ffafc4ed349a2e",
+      "chars": 9216
+    },
+    {
+      "file": "convo-142.txt",
+      "sha1": "54d1e9ab7b0821549d1ec82422cb078799a338bc",
+      "chars": 6657
+    },
+    {
+      "file": "convo-143.txt",
+      "sha1": "86fad356dc4be080ebab9692390df1863eb974db",
+      "chars": 4870
+    },
+    {
+      "file": "convo-144.txt",
+      "sha1": "6848775a767bcec318f8a12eddee6ff8bae9619f",
+      "chars": 6795
+    },
+    {
+      "file": "convo-145.txt",
+      "sha1": "40ac543c91afb87f9431067bdec7195735d1fac7",
+      "chars": 7897
+    },
+    {
+      "file": "convo-146.txt",
+      "sha1": "40319d290e217256297504d01bed2943216ecbbf",
+      "chars": 11579
+    },
+    {
+      "file": "convo-147.txt",
+      "sha1": "1f3e7bbdd8d08028b302cce7825e6845c78d75ec",
+      "chars": 6384
+    },
+    {
+      "file": "convo-148.txt",
+      "sha1": "20a022776b6c79040d11a91225e9ed1ac0c43467",
+      "chars": 7105
+    },
+    {
+      "file": "convo-149.txt",
+      "sha1": "b30f213ac43ea68b2ba1751e802aafdd0ee06537",
+      "chars": 6507
+    },
+    {
+      "file": "convo-150.txt",
+      "sha1": "bc876bc4dfc0fa765475a7fa457d89f19ea2f50f",
+      "chars": 8118
+    },
+    {
+      "file": "convo-151.txt",
+      "sha1": "158c3a7a77eef323e9ada2497f7d71039ff0887d",
+      "chars": 9984
+    },
+    {
+      "file": "convo-152.txt",
+      "sha1": "76b8ee4819ea42fc3fb83178f2a2df9aa0833651",
+      "chars": 11089
+    },
+    {
+      "file": "convo-153.txt",
+      "sha1": "48653ee23a81bc1f1a482244a3654b0e260efd8e",
+      "chars": 6959
+    },
+    {
+      "file": "convo-154.txt",
+      "sha1": "983aea7e7f85421506a04133a24edc520490d292",
+      "chars": 12173
+    },
+    {
+      "file": "convo-155.txt",
+      "sha1": "09366263a1d780e14d3be157d07b9eed79bd8f87",
+      "chars": 7597
+    },
+    {
+      "file": "convo-156.txt",
+      "sha1": "53f84dbd5eb154b410a5267d2081ddb75cc86b2c",
+      "chars": 8153
+    },
+    {
+      "file": "convo-157.txt",
+      "sha1": "af72a253f1caf1d8018e2e286b76a7e85238e62d",
+      "chars": 7015
+    },
+    {
+      "file": "convo-158.txt",
+      "sha1": "3c1043649b556f4850360845900b67b79099a17f",
+      "chars": 7016
+    },
+    {
+      "file": "convo-159.txt",
+      "sha1": "00e6c24df41c83aca8c0492603c14bcaa7621ed3",
+      "chars": 9864
+    },
+    {
+      "file": "convo-160.txt",
+      "sha1": "73df550d6bd50ca1e5934f6493bbabe2a0689edf",
+      "chars": 9521
+    },
+    {
+      "file": "convo-161.txt",
+      "sha1": "e540b12de32b372b30c7a33a0e5e83938555b27f",
+      "chars": 9398
+    },
+    {
+      "file": "convo-162.txt",
+      "sha1": "98479d51c87284b6368624c277b84caf64e561c8",
+      "chars": 10388
+    },
+    {
+      "file": "convo-163.txt",
+      "sha1": "8a11dafecc25527dfb2c3fcb78ff175cb05122f7",
+      "chars": 10915
+    },
+    {
+      "file": "convo-164.txt",
+      "sha1": "b80e00c579f05cee4891d5d5d2770b340248e4ba",
+      "chars": 9896
+    },
+    {
+      "file": "convo-165.txt",
+      "sha1": "2caa0af792254b809d770a9d7c9c5bd54e384918",
+      "chars": 11936
+    },
+    {
+      "file": "convo-166.txt",
+      "sha1": "32066818e7427c7261b48f54ce9427bb0c311710",
+      "chars": 10972
+    },
+    {
+      "file": "convo-167.txt",
+      "sha1": "d6dca32433dce1f530f785b48ce4f418583f9141",
+      "chars": 9715
+    },
+    {
+      "file": "convo-168.txt",
+      "sha1": "b7a7227d865346f2f1ce1ea53c3e9c48028c1b33",
+      "chars": 8915
+    },
+    {
+      "file": "convo-169.txt",
+      "sha1": "a350fcd27ddd6017c9fe6857617c1dab75a1d73e",
+      "chars": 10394
+    },
+    {
+      "file": "convo-170.txt",
+      "sha1": "5beecc02b137e973454531c44e922908268bc198",
+      "chars": 9794
+    },
+    {
+      "file": "convo-171.txt",
+      "sha1": "8223ec0cd9c7f6e06904a1901f164c0b536ec5be",
+      "chars": 10554
+    },
+    {
+      "file": "convo-172.txt",
+      "sha1": "1970f5e2ed2f8c03fbea5087f8ae228d0fcac073",
+      "chars": 8228
+    },
+    {
+      "file": "convo-173.txt",
+      "sha1": "619cdfb99391596a0b071c53afb4a0cb985d3b1f",
+      "chars": 6347
+    },
+    {
+      "file": "convo-174.txt",
+      "sha1": "4c399804e48aa4fe39b53631e8b23c703a3ad70b",
+      "chars": 6254
+    },
+    {
+      "file": "convo-175.txt",
+      "sha1": "70bc2bc70142cc6121d797e5ee0bcbe4654a3b65",
+      "chars": 7239
+    },
+    {
+      "file": "convo-176.txt",
+      "sha1": "c31542ce41487e963f47e05df699174d38fcfe9f",
+      "chars": 8967
+    },
+    {
+      "file": "convo-177.txt",
+      "sha1": "5556bcdbf97725c474f981e3d07df4416503b05c",
+      "chars": 6601
+    },
+    {
+      "file": "convo-178.txt",
+      "sha1": "77daa694c6e6b6389d2c81361cb69cfd5ff4159c",
+      "chars": 6475
+    },
+    {
+      "file": "convo-179.txt",
+      "sha1": "238a47cd23c91a786c1046718d974f05d84339f7",
+      "chars": 11228
+    },
+    {
+      "file": "convo-180.txt",
+      "sha1": "aa69d986f47583e37e8ca0c3a360fcff61af032e",
+      "chars": 12304
+    },
+    {
+      "file": "convo-181.txt",
+      "sha1": "8a113cd6cf4c467111b961d62c21f91a17a5dba8",
+      "chars": 11856
+    },
+    {
+      "file": "convo-182.txt",
+      "sha1": "f975a93d0a38040d71fd74196ede6d954c492f51",
+      "chars": 6985
+    },
+    {
+      "file": "convo-183.txt",
+      "sha1": "8fbc3f513e0b8e1e7d0d854a80bbeb3d4d65eb0b",
+      "chars": 6024
+    },
+    {
+      "file": "convo-184.txt",
+      "sha1": "c4d64fbe63f6af48ba38710b0c30cf9b5b583393",
+      "chars": 9104
+    },
+    {
+      "file": "convo-185.txt",
+      "sha1": "3008b91b4045c17501338e0f3a2afbb17674e585",
+      "chars": 9996
+    },
+    {
+      "file": "convo-186.txt",
+      "sha1": "72359823d4583b9c4315259218fef1a0fb23e3df",
+      "chars": 10189
+    },
+    {
+      "file": "convo-187.txt",
+      "sha1": "158513d4372d909b9c0b4eabef893cde20104bad",
+      "chars": 7066
+    },
+    {
+      "file": "convo-188.txt",
+      "sha1": "e6ae3918996542a492f88f95b061d369cdde8f35",
+      "chars": 6981
+    },
+    {
+      "file": "convo-189.txt",
+      "sha1": "616752d3457839520027b663124269c02ec60522",
+      "chars": 11117
+    },
+    {
+      "file": "convo-190.txt",
+      "sha1": "1da40958e93614f99ed1d19cfcd336105c69a1d4",
+      "chars": 12151
+    },
+    {
+      "file": "convo-191.txt",
+      "sha1": "333d132ae08000ff76268608dc9223fa20f20d8e",
+      "chars": 9439
+    },
+    {
+      "file": "convo-192.txt",
+      "sha1": "e5fb10774b97f062eb3a18f49409ef957063362e",
+      "chars": 9237
+    },
+    {
+      "file": "convo-193.txt",
+      "sha1": "833c9e43cad61c95a1141f5bdb9250225f4d6100",
+      "chars": 9091
+    },
+    {
+      "file": "convo-194.txt",
+      "sha1": "0c4d3bac305d9b8a18d1aebf28861f8b52c6d073",
+      "chars": 7172
+    },
+    {
+      "file": "convo-195.txt",
+      "sha1": "dc153998c98cf26c605d1e8fe1979aa2b5b6d66b",
+      "chars": 7757
+    },
+    {
+      "file": "convo-196.txt",
+      "sha1": "0bc76621be7e98d4f1d5f962bf11ecc5d1bc826d",
+      "chars": 6700
+    },
+    {
+      "file": "convo-197.txt",
+      "sha1": "a3cfe5832af86882d2f338eef99c52f7306f8fc1",
+      "chars": 7949
+    },
+    {
+      "file": "convo-198.txt",
+      "sha1": "007da5d6f5b544bb980bc14cb1b2951b2fb120e9",
+      "chars": 8702
+    },
+    {
+      "file": "convo-199.txt",
+      "sha1": "65f4efdb874d1c779e2739d274255c1239d93a74",
+      "chars": 10148
+    },
+    {
+      "file": "convo-200.txt",
+      "sha1": "b0a7c2241f22a2abd9af06f632ff82a8c636e7d9",
+      "chars": 10224
+    },
+    {
+      "file": "convo-201.txt",
+      "sha1": "eecaa0ed952572349eae15da0f73d8abb8de2896",
+      "chars": 6526
+    },
+    {
+      "file": "convo-202.txt",
+      "sha1": "f4f3d666f1ba68eb78e7f48d84ee0270fa02cb12",
+      "chars": 11171
+    },
+    {
+      "file": "convo-203.txt",
+      "sha1": "36e9bf05b9ef6fb165375189244977a6169b4586",
+      "chars": 11291
+    },
+    {
+      "file": "convo-204.txt",
+      "sha1": "012207e9cc99c7125f07498bd3aeabb5a524f447",
+      "chars": 6842
+    },
+    {
+      "file": "convo-205.txt",
+      "sha1": "9d13739bc97276b59713e5908f82f32d9f739f24",
+      "chars": 7530
+    },
+    {
+      "file": "convo-206.txt",
+      "sha1": "1f1c7ef5fd999b7e76d290120c754b8132247e64",
+      "chars": 5163
+    },
+    {
+      "file": "convo-207.txt",
+      "sha1": "9fe4d29f994b1c86f261bbc1dfd515a878031ab2",
+      "chars": 7336
+    },
+    {
+      "file": "convo-208.txt",
+      "sha1": "910334b46a44aea797dd029db8db7c8c8a6c434a",
+      "chars": 5696
+    },
+    {
+      "file": "convo-209.txt",
+      "sha1": "630cb6a24c82efa623f932adde1c860cd3d1f822",
+      "chars": 5348
+    },
+    {
+      "file": "convo-210.txt",
+      "sha1": "f6b3dd7eeaaefcf0332bc155a8d27e12f3b05ae5",
+      "chars": 6293
+    },
+    {
+      "file": "convo-211.txt",
+      "sha1": "00c7acc0cefca0f54b556b73ef26ab504dc63500",
+      "chars": 5434
+    },
+    {
+      "file": "convo-212.txt",
+      "sha1": "2722a19f3e7ef3a723392ffa88e5d26bee231acb",
+      "chars": 7302
+    },
+    {
+      "file": "convo-213.txt",
+      "sha1": "a99bc8907f4904fe0667feb8dbbc3aa1c3c8a6e7",
+      "chars": 6432
+    },
+    {
+      "file": "convo-214.txt",
+      "sha1": "7dd041ca9c0a59d2368abb6af9e82f05eb78c7c4",
+      "chars": 6391
+    },
+    {
+      "file": "convo-215.txt",
+      "sha1": "ec447f96cc4a89800d44cf8d8504a424f21f0239",
+      "chars": 6716
+    },
+    {
+      "file": "convo-216.txt",
+      "sha1": "1b830bdb2b0712388ea6fd1e38087d65ff235d8a",
+      "chars": 8059
+    },
+    {
+      "file": "convo-217.txt",
+      "sha1": "bfd92bcb2d7be0a2435f0a02430c3ceb7cfe53d5",
+      "chars": 11497
+    },
+    {
+      "file": "convo-218.txt",
+      "sha1": "bd40fe2bf2b10658213500e5804fb9edc8b85639",
+      "chars": 10114
+    },
+    {
+      "file": "convo-219.txt",
+      "sha1": "436a47f25ffc07c136cf553c3fccc5cec063b222",
+      "chars": 8870
+    },
+    {
+      "file": "convo-220.txt",
+      "sha1": "f878a1fa916001debca856606057e1e7f2604dc7",
+      "chars": 5607
+    },
+    {
+      "file": "convo-221.txt",
+      "sha1": "a9b3455d1f262772a183f5ca6d5743dd4f78c56e",
+      "chars": 8541
+    }
+  ]
+}
